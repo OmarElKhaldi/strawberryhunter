@@ -1,45 +1,45 @@
 package fr.esir.sh.client;
 
-import java.rmi.Naming;			//Import the rmi naming - so you can lookup remote object
-import java.rmi.RemoteException;	//Import the RemoteException class so you can catch it
-import java.net.MalformedURLException;	//Import the MalformedURLException class so you can catch it
-import java.rmi.NotBoundException;	//Import the NotBoundException class so you can catch it
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 public class SHServiceClient {
-
-    public static void main(String[] args) {
-        
-	try {
-
-	    // Create the reference to the remote object through the remiregistry			
-            SHService shService = (SHService)
-                           Naming.lookup("rmi://localhost:8090/SHService");
-            
-	    // Now use the reference c to call remote methods
-	    System.out.println("This is the result="+ shService.getHello("World"));
-        }
-        // Catch the exceptions that may occur - rubbish URL, Remote exception
-	// Not bound exception or the arithmetic exception that may occur in 
-	// one of the methods creates an arithmetic error (e.g. divide by zero)
-	catch (MalformedURLException murle) {
-            System.out.println();
-            System.out.println("MalformedURLException");
-            System.out.println(murle);
-        }
-        catch (RemoteException re) {
-            System.out.println();
-            System.out.println("RemoteException");
-            System.out.println(re);
-        }
-        catch (NotBoundException nbe) {
-            System.out.println();
-            System.out.println("NotBoundException");
-            System.out.println(nbe);
-        }
-        catch (java.lang.ArithmeticException ae) {
-            System.out.println();
-            System.out.println("java.lang.ArithmeticException");
-            System.out.println(ae);
-        }
-    }
+	
+	public static void main(String[] args) {
+	
+		try {
+			
+			// Create the reference to the remote object through the
+			// remiregistry
+			SHService shService = (SHService) Naming
+					.lookup("rmi://localhost:8090/SHService");
+			
+			// Now use the reference c to call remote methods
+			System.out.println("This is the result="
+					+ shService.getHello("World"));
+		}
+		catch (MalformedURLException e) {
+			
+			throw new IllegalStateException(
+					"MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct",
+					e);
+			
+		}
+		catch (RemoteException e) {
+			
+			throw new IllegalStateException(
+					"MalformedURLException occured. Maybe an exception occured during the execution of a remote method call",
+					e);
+			
+		}
+		catch (NotBoundException e) {
+			
+			throw new IllegalStateException(
+					"NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding.",
+					e);
+			
+		}
+	}
 }
