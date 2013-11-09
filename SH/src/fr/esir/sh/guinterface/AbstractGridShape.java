@@ -3,14 +3,17 @@ package fr.esir.sh.guinterface;
 import java.awt.Graphics;
 import javax.swing.JComponent;
 
+import fr.esir.sh.client.SHServiceClient;
+import fr.esir.sh.server.SHServiceImpl;
+
 abstract class AbstractGridShape extends JComponent {
 
 	  /* Position of the shape in the grid */
 	  public int x = 0 ;
 	  public int y = 0 ;
-	  private ExampleDisplay dis ;
+	  private SHServiceClient dis;
 
-	  public AbstractGridShape(ExampleDisplay display) {
+	  public AbstractGridShape(SHServiceClient display) {
 	    dis = display ;
 	    dis.add(this);
 	    dis.pack(); // somehow needed or add does not work properly
@@ -27,16 +30,16 @@ abstract class AbstractGridShape extends JComponent {
 
 	  /* delegates drawing proper to drawShape. Transform the grid
 	   * coordinates of the shape into pixel coordinates, using the cell
-	   * size of the ExampleDisplay associated with the AbstractGridShape */
+	   * size of the SHServiceImpl associated with the AbstractGridShape */
 	  public void paint(Graphics g) {
 	    this.drawShape(g,
-	                   dis.cellSize/2 + x*dis.cellSize, 
-	                   dis.cellSize/2 + y*dis.cellSize, 
-	                   dis.cellSize, dis.cellSize);
+	                   dis.getCellSize()/2 + x*dis.getCellSize(), 
+	                   dis.getCellSize()/2 + y*dis.getCellSize(), 
+	                   dis.getCellSize(), dis.getCellSize());
 	  }
 
 	  public void moveRect(int[] delta) {
-	    x = (x+delta[0]+dis.gridSize)%dis.gridSize ;
-	    y = (y+delta[1]+dis.gridSize)%dis.gridSize ;
+	    x = (x+delta[0]+dis.getGridSize())%dis.getGridSize() ;
+	    y = (y+delta[1]+dis.getGridSize())%dis.getGridSize() ;
 	  }
 	} // EndClass AbstractGridShape

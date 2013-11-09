@@ -1,7 +1,15 @@
 package fr.esir.sh.client;
 
-public interface SHService extends java.rmi.Remote{
-	
-    public String getHello(String name) throws java.rmi.RemoteException;
+import java.rmi.RemoteException;
 
+public interface SHService extends java.rmi.Remote{
+
+    public int getNumberOfSweets() throws RemoteException;
+    
+    public int getCellSize() throws RemoteException;
+    
+    public int getGridSize() throws RemoteException;
+    
+    public boolean[][] getLogicGameMap() throws RemoteException;
+    
 }
