@@ -4,11 +4,11 @@ import java.awt.Graphics;
 import javax.swing.JComponent;
 
 import fr.esir.sh.client.SHServiceClient;
-import fr.esir.sh.server.SHServiceImpl;
 
 abstract class AbstractGridShape extends JComponent {
 
-	  /* Position of the shape in the grid */
+	private static final long serialVersionUID = 1L;
+	/* Position of the shape in the grid */
 	  public int x = 0 ;
 	  public int y = 0 ;
 	  private SHServiceClient dis;

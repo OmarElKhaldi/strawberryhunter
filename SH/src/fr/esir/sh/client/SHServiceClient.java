@@ -13,7 +13,6 @@ import javax.swing.JFrame;
 
 import fr.esir.sh.guinterface.Circle;
 import fr.esir.sh.guinterface.Rectangle;
-import fr.esir.sh.server.Player;
 
 public class SHServiceClient extends JFrame implements KeyListener{
 	
@@ -229,16 +228,18 @@ public class SHServiceClient extends JFrame implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		
 		  int keyCode = e.getKeyCode();
+		  
+		  int[] coord = {0, 0};
 		  		  
 		  try{
 			  
-			  if (keyCode == KeyEvent.VK_RIGHT)	this.shService.movePlayerToRight();
+			  if (keyCode == KeyEvent.VK_RIGHT)	coord= this.shService.movePlayerToRight();
 			  
-			  else if (keyCode == KeyEvent.VK_LEFT) this.shService.movePlayerToLeft();
+			  else if (keyCode == KeyEvent.VK_LEFT) coord= this.shService.movePlayerToLeft();
 			  
-			  else if (keyCode == KeyEvent.VK_DOWN) this.shService.movePlayerToDown();
+			  else if (keyCode == KeyEvent.VK_DOWN) coord= this.shService.movePlayerToDown();
 			  
-			  else if (keyCode == KeyEvent.VK_UP) this.shService.movePlayerToUp();
+			  else if (keyCode == KeyEvent.VK_UP) coord= this.shService.movePlayerToUp();
 			  
 		  }
 		  catch(RemoteException re){
@@ -249,6 +250,22 @@ public class SHServiceClient extends JFrame implements KeyListener{
 		  }
 		  
 		  changeRectanglePos();
+		  
+		  int x= coord[0];
+		  
+		  int y= coord[1];
+		  
+		  if(this.gameMap[x][y] != null){
+			  
+			  Circle c = gameMap[myRectangle.x][myRectangle.y];
+		      
+			  myContainer.remove(c);
+	      
+			  pack();
+			  
+		  }
+			  
+			  
 		  
 	}
 

@@ -1,7 +1,6 @@
 package fr.esir.sh.client;
 
 import java.rmi.RemoteException;
-import fr.esir.sh.server.Player;
 
 public interface SHService extends java.rmi.Remote{
 
@@ -13,13 +12,13 @@ public interface SHService extends java.rmi.Remote{
     
     public boolean[][] getLogicGameMap() throws RemoteException;
     
-    public void movePlayerToRight() throws RemoteException;
+    public int[] movePlayerToRight() throws RemoteException;
     
-    public void movePlayerToLeft() throws RemoteException;
+    public int[] movePlayerToLeft() throws RemoteException;
 
-    public void movePlayerToDown() throws RemoteException;
+    public int[] movePlayerToDown() throws RemoteException;
     
-    public void movePlayerToUp() throws RemoteException;
+    public int[] movePlayerToUp() throws RemoteException;
     
     public int getPlayerXPos() throws RemoteException;
     

@@ -4,13 +4,13 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
 public class ExampleDisplay extends JFrame implements KeyListener {
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
@@ -30,7 +30,7 @@ public class ExampleDisplay extends JFrame implements KeyListener {
 		
 	}
 	
-/*	  int cellSize = 20 ;
+	  /*int cellSize = 20 ;
 	  int gridSize = 20 ;
 	  Map<Integer,int[]> moveTable = new HashMap<Integer,int[]>() ;
 	  Rectangle myRectangle = new Rectangle(this) ;
@@ -75,11 +75,11 @@ public class ExampleDisplay extends JFrame implements KeyListener {
 
 	  } // EndConstructor ExampleDisplay
 
-	   needed to implement KeyListener 
+	   //needed to implement KeyListener 
 	  public void keyTyped   (KeyEvent ke){}
 	  public void keyReleased(KeyEvent ke){}
 	  
-	   where the real work happens: reacting to key being pressed 
+	   //where the real work happens: reacting to key being pressed 
 	  public void keyPressed (KeyEvent ke){ 
 	   
 		  int keyCode = ke.getKeyCode();

@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import fr.esir.sh.client.SHServiceClient;
-import fr.esir.sh.server.SHServiceImpl;
 
 public class Circle extends AbstractGridShape {
 	
-	  public Circle(SHServiceClient display) {
+	private static final long serialVersionUID = 1L;
+
+	public Circle(SHServiceClient display) {
 		  
 	    super(display);
 	    

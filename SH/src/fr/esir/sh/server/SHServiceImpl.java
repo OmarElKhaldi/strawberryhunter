@@ -80,7 +80,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 	}
 
 	@Override
-	public void movePlayerToRight()
+	public int[] movePlayerToRight()
 			throws RemoteException {
 	
 		int x = this.player.getX();
@@ -89,10 +89,18 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 		
 		this.player.setX(x);
 		
+		this.verifyIfStrawberryCollected();
+		
+		int y = this.player.getY();
+		
+		int result[] = {x, y};
+		
+		return result;
+		
 	}
 
 	@Override
-	public void movePlayerToLeft()
+	public int[] movePlayerToLeft()
 			throws RemoteException {
 	
 		int x = this.player.getX();
@@ -103,10 +111,18 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 		
 		this.player.setX(x);
 		
+		this.verifyIfStrawberryCollected();
+		
+		int y = this.player.getY();
+		
+		int result[] = {x, y};
+		
+		return result;
+		
 	}
 
 	@Override
-	public void movePlayerToDown()
+	public int[] movePlayerToDown()
 			throws RemoteException {
 	
 		int y = this.player.getY();
@@ -115,10 +131,18 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 		
 		this.player.setY(y);
 		
+		this.verifyIfStrawberryCollected();
+		
+		int x = this.player.getX();
+		
+		int result[] = {x, y};
+		
+		return result;
+		
 	}
 	
 	@Override
-	public void movePlayerToUp()
+	public int[] movePlayerToUp()
 			throws RemoteException {
 	
 		int y = this.player.getY();
@@ -128,6 +152,14 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 		if(y == -1) y = 19;
 		
 		this.player.setY(y);
+		
+		this.verifyIfStrawberryCollected();
+		
+		int x = this.player.getX();
+		
+		int result[] = {x, y};
+		
+		return result;
 		
 	}
 	
@@ -151,4 +183,19 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 		
 	}
 	
+	private void verifyIfStrawberryCollected(){
+		
+		int x = this.player.getX();
+		
+		int y = this.player.getY();
+		
+		if(this.gameMap[x][y] == true){
+			
+			this.gameMap[x][y]= false;
+			
+			System.out
+					.println("--------------"+x+" "+y);
+		}
+			
+	}
 }
