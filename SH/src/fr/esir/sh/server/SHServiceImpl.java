@@ -193,9 +193,20 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 			
 			this.gameMap[x][y]= false;
 			
-			System.out
-					.println("--------------"+x+" "+y);
-		}
+			this.numberOfSweets --;
 			
+			verifyGameOver();
+
+		}	
 	}
+	
+	private void verifyGameOver(){
+		
+		if(numberOfSweets == 0)
+
+			System.out
+					.println("Game over !");
+		
+	}
+	
 }

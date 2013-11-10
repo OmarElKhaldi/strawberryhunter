@@ -264,9 +264,6 @@ public class SHServiceClient extends JFrame implements KeyListener{
 			  pack();
 			  
 		  }
-			  
-			  
-		  
 	}
 
 	private void changeRectanglePos(){
