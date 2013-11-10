@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 
 import fr.esir.sh.guinterface.Circle;
 import fr.esir.sh.guinterface.Rectangle;
+import fr.esir.sh.server.Player;
 
 public class SHServiceClient extends JFrame implements KeyListener{
 	
@@ -52,6 +53,8 @@ public class SHServiceClient extends JFrame implements KeyListener{
 	    gameMap = addSweetsIntoGUI();
 	    	
 	    setVisible(true);
+	    
+	    addKeyListener(this);
 	
 	}
 	
@@ -224,20 +227,53 @@ public class SHServiceClient extends JFrame implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
+		  int keyCode = e.getKeyCode();
+		  		  
+		  try{
+			  
+			  if (keyCode == KeyEvent.VK_RIGHT)	this.shService.movePlayerToRight();
+			  
+			  else if (keyCode == KeyEvent.VK_LEFT) this.shService.movePlayerToLeft();
+			  
+			  else if (keyCode == KeyEvent.VK_DOWN) this.shService.movePlayerToDown();
+			  
+			  else if (keyCode == KeyEvent.VK_UP) this.shService.movePlayerToUp();
+			  
+		  }
+		  catch(RemoteException re){
+			  
+			  System.err.println("RemoteException occured. Could not reach the server to move the player. " +
+			  					 "Consequently, the player will not move.");
+			  
+		  }
+		  
+		  changeRectanglePos();
+		  
 	}
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+	private void changeRectanglePos(){
 		
-	}
+		  try{
+			  
+			  myRectangle.x = this.shService.getPlayerXPos();
+			  
+			  myRectangle.y = this.shService.getPlayerYPos();
+			  
+			  myRectangle.repaint();
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
+		  }
+		  catch(RemoteException re){
+			  
+			  System.err.println("RemoteException occured. Could not get the coordinates of the player.");
+			  
+		  }
 		
 	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {}
+	@Override
+	public void keyTyped(KeyEvent e) {}
 
 }

@@ -15,9 +15,13 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 	
 	private int numberOfSweets = 10;
 	
-	boolean[][] gameMap = addSweetsIntoLandscape();;
+	boolean[][] gameMap = addSweetsIntoLandscape();
+	
+	Player player = new Player(0, 0);
 	
 	public SHServiceImpl() throws java.rmi.RemoteException {
+	
+		super();
 		
 	}
 	
@@ -72,6 +76,78 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 	public boolean[][] getLogicGameMap()  throws RemoteException{
 		
 		return this.gameMap;
+		
+	}
+
+	@Override
+	public void movePlayerToRight()
+			throws RemoteException {
+	
+		int x = this.player.getX();
+		
+		x = (x + 1) % this.getGridSize();
+		
+		this.player.setX(x);
+		
+	}
+
+	@Override
+	public void movePlayerToLeft()
+			throws RemoteException {
+	
+		int x = this.player.getX();
+		
+		x = (x - 1) % this.getGridSize();
+
+		if(x == -1) x = 19;
+		
+		this.player.setX(x);
+		
+	}
+
+	@Override
+	public void movePlayerToDown()
+			throws RemoteException {
+	
+		int y = this.player.getY();
+		
+		y = (y + 1) % this.getGridSize();
+		
+		this.player.setY(y);
+		
+	}
+	
+	@Override
+	public void movePlayerToUp()
+			throws RemoteException {
+	
+		int y = this.player.getY();
+		
+		y = (y - 1) % this.getGridSize();
+
+		if(y == -1) y = 19;
+		
+		this.player.setY(y);
+		
+	}
+	
+	@Override
+	public int getPlayerXPos()
+			throws RemoteException {
+	
+		int x = this.player.getX();
+		
+		return x;
+
+	}
+
+	@Override
+	public int getPlayerYPos()
+			throws RemoteException {
+	
+		int y = this.player.getY();
+		
+		return y;
 		
 	}
 	

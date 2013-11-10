@@ -22,4 +22,12 @@ public class Rectangle extends AbstractGridShape {
 	    
 	  }
 	  
+	  public void setCoordinates(int x, int y){
+		  
+		  this.x = x;
+		  
+		  this.y = y;
+		  
+	  }
+	  
 } // EndClass Rectangle
