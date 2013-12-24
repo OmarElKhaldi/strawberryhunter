@@ -7,43 +7,17 @@ import java.rmi.registry.LocateRegistry;
 
 import fr.esir.sh.client.SHService;
 
-public class SHServiceServer {
+public class SHServiceServer{
 	
 	public SHServiceServer() {
 	
 		try {
 			
+			//Launch the server
 			LocateRegistry.createRegistry(8090);
-			
-		}
-		catch (RemoteException e) {
-			
-			throw new IllegalStateException(
-					"RemoteException occured. The port number may be used. Try to use another port. "
-							+ "If it's the case, change it in the rebind method below as well as for the client side.",
-					e);
-			
-		}
-		
-		SHService shService;
-		
-		try {
-			
-			shService = new SHServiceImpl();
-			
-		}
-		catch (RemoteException e) {
-			
-			throw new IllegalStateException(
-					"RemoteException occured. Check if the instance of the SHServiceImpl is not null",
-					e);
-			
-		}
-		
-		try {
-			
+			SHService shService = new SHServiceImpl();
 			Naming.rebind("rmi://localhost:8090/SHService", shService);
-			
+			System.out.println("Server launched");
 		}
 		catch (RemoteException e) {
 			
@@ -65,7 +39,6 @@ public class SHServiceServer {
 	public static void main(String args[]) {
 	
 		new SHServiceServer();
-		
 	}
 	
 }

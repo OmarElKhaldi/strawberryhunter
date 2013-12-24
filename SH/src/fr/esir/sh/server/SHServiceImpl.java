@@ -1,57 +1,57 @@
 package fr.esir.sh.server;
 
+import java.awt.Color;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import fr.esir.sh.client.SHService;
 
-public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
-		implements SHService {
+import fr.esir.sh.client.SHService;
+import fr.esir.sh.client.guicomponents.Rectangle;
+
+public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implements SHService{
 	
 	private static final long serialVersionUID = 1L;
-	
 	private int cellSize = 20;
-	
 	private int gridSize = 20;
-	
 	private int numberOfSweets = 10;
-	
+	List<SHServiceClientImpl> listClients= new ArrayList<SHServiceClientImpl>();
+	List<Player> listPlayers= new ArrayList<Player>();
 	boolean[][] gameMap = addSweetsIntoLandscape();
-	
-	Player player = new Player(0, 0);
 	
 	public SHServiceImpl() throws java.rmi.RemoteException {
 	
 		super();
-		
 	}
 	
 	@Override
 	public int getCellSize() throws RemoteException {
 	
 		return cellSize;
-	
 	}
 
 	@Override
 	public int getGridSize() throws RemoteException {
 	
 		return gridSize;
-	
 	}
 	
 	@Override
 	public int getNumberOfSweets() throws RemoteException {
 		
 		return this.numberOfSweets;
-		
 	}
 	
-	public boolean[][] addSweetsIntoLandscape(){
+	@Override
+	public boolean[][] getLogicGameMap()  throws RemoteException{
+		
+		return this.gameMap;		
+	}
+	
+	private boolean[][] addSweetsIntoLandscape(){
 		
 		boolean[][] gameMap = new boolean[gridSize][gridSize];
-		
 	    Random rand = new Random();
-		
 		for(int i = 0; i < numberOfSweets; i++) {
 			
 			int j, k;	      
@@ -59,154 +59,276 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject
 			do {
 	    	  
 				j = rand.nextInt(gridSize);
-	        
 				k = rand.nextInt(gridSize);
-	        
-			} while (gameMap[j][k] == true);
+			} while (gameMap[j][k] == true || !(verifyIfEmptyPos(j, k)));
 			
 			gameMap[j][k] = true;
 			
 	    }
 		
 		return gameMap;
-		
 	}
 	
-	@Override
-	public boolean[][] getLogicGameMap()  throws RemoteException{
+	private boolean verifyIfEmptyPos(int x, int y){
 		
-		return this.gameMap;
+		boolean empty= true;
 		
+		for(Player player: this.listPlayers)
+			
+			if(player.getX() == x && player.getY() == y)	empty= false;
+		
+		return empty;
 	}
 
-	@Override
-	public int[] movePlayerToRight()
-			throws RemoteException {
+	private void movePlayerToRight(SHServiceClientImpl shServiceClient)
+			throws RemoteException {	
+
+		Player player= fetch(shServiceClient);
+		
+		if(player == null)	
+			throw new IllegalStateException("The player to move doesn't exist");
 	
-		int x = this.player.getX();
+		int result[]= moveToRight(player, shServiceClient);
 		
-		x = (x + 1) % this.getGridSize();
+		//TODO Mettre ceci dans une fonction a part
+		for(SHServiceClientImpl client: listClients){
+			
+			client.getPointAndChange(shServiceClient.getColor(), result);
+		}
+	}
+	
+	private int[] moveToRight(Player player, SHServiceClientImpl shServiceClient) 
+			throws RemoteException{
 		
-		this.player.setX(x);
-		
-		this.verifyIfStrawberryCollected();
-		
-		int y = this.player.getY();
-		
+		int x = player.getX();
+		int y = player.getY();
+		if(x < gridSize - 1 ){
+			if(verifyIfEmptyPos(x+1, y)){
+				
+				x = (x + 1);
+				player.setX(x);
+				this.verifyIfStrawberryCollected(shServiceClient);
+			}
+		}
 		int result[] = {x, y};
-		
 		return result;
-		
 	}
 
-	@Override
-	public int[] movePlayerToLeft()
+	private void movePlayerToLeft(SHServiceClientImpl shServiceClient)
 			throws RemoteException {
 	
-		int x = this.player.getX();
 		
-		x = (x - 1) % this.getGridSize();
+		Player player= fetch(shServiceClient);
+		
+		if(player == null)
+			
+			throw new IllegalStateException("The player to move doesn't exist");
+		
+		int result[] = moveToLeft(player, shServiceClient);
+		//shServiceClient.changeRectanglePos(result[0], result[1]);
+		for(SHServiceClientImpl client: listClients){
+			
+			client.getPointAndChange(shServiceClient.getColor(), result);
+		}
+	}
 
-		if(x == -1) x = 19;
+	private int[] moveToLeft(Player player, SHServiceClientImpl shServiceClient) 
+			throws RemoteException{
 		
-		this.player.setX(x);
-		
-		this.verifyIfStrawberryCollected();
-		
-		int y = this.player.getY();
-		
+		int x = player.getX();
+		int y = player.getY();
+		if(x>0){
+			if(verifyIfEmptyPos(x-1, y)){
+				
+				x = (x - 1) % this.getGridSize();
+				if(x == -1) x = 19;
+				player.setX(x);
+				this.verifyIfStrawberryCollected(shServiceClient);
+			}
+		}
 		int result[] = {x, y};
-		
 		return result;
-		
 	}
+	
 
-	@Override
-	public int[] movePlayerToDown()
+	private void movePlayerToDown(SHServiceClientImpl shServiceClient)
 			throws RemoteException {
 	
-		int y = this.player.getY();
+		Player player= fetch(shServiceClient);
 		
-		y = (y + 1) % this.getGridSize();
+		if(player == null)
+			
+			throw new IllegalStateException("The player to move doesn't exist");
 		
-		this.player.setY(y);
+		int result[] = moveToDown(player, shServiceClient);
+		//shServiceClient.changeRectanglePos(result[0], result[1]);
+		for(SHServiceClientImpl client: listClients){
+			
+			client.getPointAndChange(shServiceClient.getColor(), result);
+		}
+	}
+	
+	private int[] moveToDown(Player player, SHServiceClientImpl shServiceClient)
+		throws RemoteException{
 		
-		this.verifyIfStrawberryCollected();
-		
-		int x = this.player.getX();
-		
+		int x = player.getX();
+		int y = player.getY();
+		if(y < gridSize - 1){
+			if(verifyIfEmptyPos(x, y+1)){
+				
+				y = (y + 1) % this.getGridSize();
+				player.setY(y);
+				this.verifyIfStrawberryCollected(shServiceClient);
+			}
+		}
 		int result[] = {x, y};
-		
 		return result;
-		
 	}
 	
-	@Override
-	public int[] movePlayerToUp()
-			throws RemoteException {
-	
-		int y = this.player.getY();
-		
-		y = (y - 1) % this.getGridSize();
 
-		if(y == -1) y = 19;
+	private void movePlayerToUp(SHServiceClientImpl shServiceClientM)
+			throws RemoteException {
 		
-		this.player.setY(y);
+		Player player= fetch(shServiceClientM);
 		
-		this.verifyIfStrawberryCollected();
-		
-		int x = this.player.getX();
-		
+		if(player == null)
+			
+			throw new IllegalStateException("The player to move doesn't exist");
+
+		int result[] = moveToUp(player, shServiceClientM);
+		//shServiceClientM.changeRectanglePos(result[0], result[1]);
+		for(SHServiceClientImpl client: listClients){
+			
+			client.getPointAndChange(shServiceClientM.getColor(), result);
+		}
+	}
+	
+	private int[] moveToUp(Player player, SHServiceClientImpl shServiceClient)
+		throws RemoteException{
+
+		int x = player.getX();
+		int y = player.getY();
+		if(y > 0){
+			if(verifyIfEmptyPos(x, y-1)){
+				
+				y = (y - 1) % this.getGridSize();
+				if(y == -1) y = 19;
+				player.setY(y);
+				this.verifyIfStrawberryCollected(shServiceClient);
+			}
+		}
 		int result[] = {x, y};
-		
 		return result;
-		
 	}
 	
-	@Override
-	public int getPlayerXPos()
-			throws RemoteException {
-	
-		int x = this.player.getX();
+	private void verifyIfStrawberryCollected(SHServiceClientImpl shServiceClient){
 		
-		return x;
-
-	}
-
-	@Override
-	public int getPlayerYPos()
-			throws RemoteException {
-	
-		int y = this.player.getY();
+		Player player= fetch(shServiceClient);
 		
-		return y;
+		if(player == null)	
+			throw new IllegalStateException("The player to move doesn't exist");
 		
-	}
-	
-	private void verifyIfStrawberryCollected(){
 		
-		int x = this.player.getX();
-		
-		int y = this.player.getY();
+		int x = player.getX();
+		int y = player.getY();
 		
 		if(this.gameMap[x][y] == true){
 			
 			this.gameMap[x][y]= false;
-			
 			this.numberOfSweets --;
 			
-			verifyGameOver();
-
+			verifyIfAllSweetsConsumed(shServiceClient);
 		}	
 	}
 	
-	private void verifyGameOver(){
+	private void verifyIfAllSweetsConsumed(SHServiceClientImpl shServiceClient){
 		
-		if(numberOfSweets == 0)
+		try{
+			
+			if(numberOfSweets == 0){
+				
+				shServiceClient.addScore();
+				SHServiceClientImpl winner= this.getWinner();
+				ScoreDisplayer scoreDisplayer= new ScoreDisplayer(winner.getClientId(), winner.getColor(), winner.getScore());
+			}
+		}catch(RemoteException e){
+			
+			throw new IllegalStateException("RemoteException. Could not load the client to get his id");
+		}
 
-			System.out
-					.println("Game over !");
+	}
+	
+	private SHServiceClientImpl getWinner(){
 		
+		int max=0;
+		SHServiceClientImpl winner= null;
+		
+		try{
+			for(SHServiceClientImpl client: listClients){
+				if(client.getScore() > max){
+					
+					winner= client;
+					max= client.getScore();
+				}
+			}
+		}catch(RemoteException e){
+			
+			throw new IllegalStateException("RemoteException occured. Could not get the client to display his data in the end of the game", e);
+		}
+		
+		return winner;
+	}
+	
+	private Player fetch(SHServiceClientImpl shServiceClient){
+		
+		Player player= null;
+		
+		for(Player bufferPlayer: listPlayers)
+			if(shServiceClient.equals(bufferPlayer.getShServiceClientM())) player= bufferPlayer;
+		
+		return player;
+	}
+
+	@Override
+	public void addNewPlayer(SHServiceClientImpl shServiceClient, int id) throws RemoteException {
+		
+		listClients.add(shServiceClient);
+		
+		Player player1= new Player(shServiceClient);
+		listPlayers.add(player1);
+		
+		addRectangleIntoLandscape();
+	}
+	
+	private void addRectangleIntoLandscape() throws RemoteException{
+		
+		for(SHServiceClientImpl clientReceiver: listClients){ 
+			for(SHServiceClientImpl clientSender: listClients){
+				
+				int senderId= clientSender.getClientId();
+				int x= clientSender.getX();
+				int y= clientSender.getY();
+				Color color= clientSender.getColor();				
+				
+				int receiverId= clientReceiver.getClientId();
+				Rectangle rectangle= clientReceiver.getMyRectangle();			
+				
+				if(senderId != receiverId)
+					
+					clientReceiver.addRectangle(senderId, x, y, color);
+				
+			}
+		}
+	}
+
+	@Override
+	public synchronized void movePlayer(SHServiceClientImpl shServiceClientImpl,
+			char movement) throws RemoteException {
+		
+		if(movement == 'r') this.movePlayerToRight(shServiceClientImpl);
+		if(movement == 'l') this.movePlayerToLeft(shServiceClientImpl);
+		if(movement == 'u') this.movePlayerToUp(shServiceClientImpl);
+		if(movement == 'd') this.movePlayerToDown(shServiceClientImpl);	
 	}
 	
 }

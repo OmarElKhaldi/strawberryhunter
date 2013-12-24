@@ -1,17 +1,27 @@
 package fr.esir.sh.server;
 
-public class Player {
+import java.rmi.RemoteException;
+
+public class Player{
 
 	private int x;
-	
 	private int y;
+	private SHServiceClientImpl shServiceClientM;
 	
-	public Player(int x, int y){
+	public Player(SHServiceClientImpl shServiceClientM){
 		
-		this.x = x;
+		this.shServiceClientM = shServiceClientM;
 		
-		this.y = y;
-		
+		try{
+			
+			this.x = this.shServiceClientM.getX();
+			this.y = this.shServiceClientM.getY();
+		}
+		catch(RemoteException re){
+			
+			throw new IllegalStateException("RemoteException. Could not get the coordinates from the client. " +
+					                         "They are initialized to 0");
+		}
 	}
 	
 	public int getX(){
@@ -23,19 +33,19 @@ public class Player {
 		
 		return this.y;
 	}
-
 	
 	public void setX(int x) {
 	
 		this.x = x;
 	}
 
-	
 	public void setY(int y) {
 	
 		this.y = y;
 	}
-	
-	
-	
+
+	public SHServiceClientImpl getShServiceClientM() {
+		
+		return shServiceClientM;
+	}
 }
