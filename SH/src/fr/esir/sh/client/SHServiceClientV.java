@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 
 import fr.esir.sh.client.guicomponents.Circle;
 import fr.esir.sh.client.guicomponents.Rectangle;
-import fr.esir.sh.server.SHServiceClientImpl;
+import fr.esir.sh.server.SHServiceClient;
 
 public class SHServiceClientV extends JFrame implements KeyListener, Serializable, java.rmi.Remote{
 
@@ -29,7 +29,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 	private Circle[][] gameMap;
 	private Rectangle myRectangle;
 	List<Rectangle> listRectangles= new ArrayList<Rectangle>();
-	private SHServiceClientImpl shServiceClientM;
+	private SHServiceClient shServiceClientM;
 	private Commands commands;
 	
 	public SHServiceClientV(int clientId, Commands commands){
@@ -102,7 +102,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		return this.listRectangles;
 	}
 	
-	public SHServiceClientImpl getModel(){
+	public SHServiceClient getModel(){
 		
 		return this.shServiceClientM;
 	}
@@ -163,7 +163,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 	    }
 	}
 	
-	public void addModelToView(SHServiceClientImpl shServiceClientM){
+	public void addModelToView(SHServiceClient shServiceClientM){
 		
 		this.shServiceClientM= shServiceClientM;
 	}
@@ -225,13 +225,13 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 					
 					try{
 						
-						SHServiceClientImpl bufferModel= rectangle.getSHServiceClientV().getModel();
+						SHServiceClient bufferModel= rectangle.getSHServiceClientV().getModel();
 						Rectangle bufferRectangle= bufferModel.getMyRectangle();
 						Color buffercolor= bufferRectangle.getColor();
 						
 						if(rectangle.getColor() == buffercolor){
 							
-							SHServiceClientImpl model= rectangle.getSHServiceClientV().getModel();
+							SHServiceClient model= rectangle.getSHServiceClientV().getModel();
 							model.addScore();
 						}
 						
@@ -239,7 +239,6 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 						
 						throw new IllegalStateException("RemoteException occured. Could not get the data of the model from the server.", e);
 					}
-					
 				}
 			}
 		}

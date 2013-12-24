@@ -15,7 +15,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	private int cellSize = 20;
 	private int gridSize = 20;
 	private int numberOfSweets = 10;
-	List<SHServiceClientImpl> listClients= new ArrayList<SHServiceClientImpl>();
+	List<SHServiceClient> listClients= new ArrayList<SHServiceClient>();
 	List<Player> listPlayers= new ArrayList<Player>();
 	boolean[][] gameMap = addSweetsIntoLandscape();
 	
@@ -80,7 +80,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return empty;
 	}
 
-	private void movePlayerToRight(SHServiceClientImpl shServiceClient)
+	private void movePlayerToRight(SHServiceClient shServiceClient)
 			throws RemoteException {	
 
 		Player player= fetch(shServiceClient);
@@ -91,13 +91,13 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		int result[]= moveToRight(player, shServiceClient);
 		
 		//TODO Mettre ceci dans une fonction a part
-		for(SHServiceClientImpl client: listClients){
+		for(SHServiceClient client: listClients){
 			
 			client.getPointAndChange(shServiceClient.getColor(), result);
 		}
 	}
 	
-	private int[] moveToRight(Player player, SHServiceClientImpl shServiceClient) 
+	private int[] moveToRight(Player player, SHServiceClient shServiceClient) 
 			throws RemoteException{
 		
 		int x = player.getX();
@@ -114,7 +114,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return result;
 	}
 
-	private void movePlayerToLeft(SHServiceClientImpl shServiceClient)
+	private void movePlayerToLeft(SHServiceClient shServiceClient)
 			throws RemoteException {
 	
 		
@@ -126,13 +126,13 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		
 		int result[] = moveToLeft(player, shServiceClient);
 		//shServiceClient.changeRectanglePos(result[0], result[1]);
-		for(SHServiceClientImpl client: listClients){
+		for(SHServiceClient client: listClients){
 			
 			client.getPointAndChange(shServiceClient.getColor(), result);
 		}
 	}
 
-	private int[] moveToLeft(Player player, SHServiceClientImpl shServiceClient) 
+	private int[] moveToLeft(Player player, SHServiceClient shServiceClient) 
 			throws RemoteException{
 		
 		int x = player.getX();
@@ -151,7 +151,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	}
 	
 
-	private void movePlayerToDown(SHServiceClientImpl shServiceClient)
+	private void movePlayerToDown(SHServiceClient shServiceClient)
 			throws RemoteException {
 	
 		Player player= fetch(shServiceClient);
@@ -162,13 +162,13 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		
 		int result[] = moveToDown(player, shServiceClient);
 		//shServiceClient.changeRectanglePos(result[0], result[1]);
-		for(SHServiceClientImpl client: listClients){
+		for(SHServiceClient client: listClients){
 			
 			client.getPointAndChange(shServiceClient.getColor(), result);
 		}
 	}
 	
-	private int[] moveToDown(Player player, SHServiceClientImpl shServiceClient)
+	private int[] moveToDown(Player player, SHServiceClient shServiceClient)
 		throws RemoteException{
 		
 		int x = player.getX();
@@ -186,7 +186,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	}
 	
 
-	private void movePlayerToUp(SHServiceClientImpl shServiceClientM)
+	private void movePlayerToUp(SHServiceClient shServiceClientM)
 			throws RemoteException {
 		
 		Player player= fetch(shServiceClientM);
@@ -197,13 +197,13 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 
 		int result[] = moveToUp(player, shServiceClientM);
 		//shServiceClientM.changeRectanglePos(result[0], result[1]);
-		for(SHServiceClientImpl client: listClients){
+		for(SHServiceClient client: listClients){
 			
 			client.getPointAndChange(shServiceClientM.getColor(), result);
 		}
 	}
 	
-	private int[] moveToUp(Player player, SHServiceClientImpl shServiceClient)
+	private int[] moveToUp(Player player, SHServiceClient shServiceClient)
 		throws RemoteException{
 
 		int x = player.getX();
@@ -221,7 +221,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return result;
 	}
 	
-	private void verifyIfStrawberryCollected(SHServiceClientImpl shServiceClient){
+	private void verifyIfStrawberryCollected(SHServiceClient shServiceClient){
 		
 		Player player= fetch(shServiceClient);
 		
@@ -241,14 +241,14 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		}	
 	}
 	
-	private void verifyIfAllSweetsConsumed(SHServiceClientImpl shServiceClient){
+	private void verifyIfAllSweetsConsumed(SHServiceClient shServiceClient){
 		
 		try{
 			
 			if(numberOfSweets == 0){
 				
 				shServiceClient.addScore();
-				SHServiceClientImpl winner= this.getWinner();
+				SHServiceClient winner= this.getWinner();
 				ScoreDisplayer scoreDisplayer= new ScoreDisplayer(winner.getClientId(), winner.getColor(), winner.getScore());
 			}
 		}catch(RemoteException e){
@@ -258,13 +258,13 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 
 	}
 	
-	private SHServiceClientImpl getWinner(){
+	private SHServiceClient getWinner(){
 		
 		int max=0;
-		SHServiceClientImpl winner= null;
+		SHServiceClient winner= null;
 		
 		try{
-			for(SHServiceClientImpl client: listClients){
+			for(SHServiceClient client: listClients){
 				if(client.getScore() > max){
 					
 					winner= client;
@@ -279,7 +279,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return winner;
 	}
 	
-	private Player fetch(SHServiceClientImpl shServiceClient){
+	private Player fetch(SHServiceClient shServiceClient){
 		
 		Player player= null;
 		
@@ -290,7 +290,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	}
 
 	@Override
-	public void addNewPlayer(SHServiceClientImpl shServiceClient, int id) throws RemoteException {
+	public void addNewPlayer(SHServiceClient shServiceClient, int id) throws RemoteException {
 		
 		listClients.add(shServiceClient);
 		
@@ -302,8 +302,8 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	
 	private void addRectangleIntoLandscape() throws RemoteException{
 		
-		for(SHServiceClientImpl clientReceiver: listClients){ 
-			for(SHServiceClientImpl clientSender: listClients){
+		for(SHServiceClient clientReceiver: listClients){ 
+			for(SHServiceClient clientSender: listClients){
 				
 				int senderId= clientSender.getClientId();
 				int x= clientSender.getX();
@@ -322,7 +322,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	}
 
 	@Override
-	public synchronized void movePlayer(SHServiceClientImpl shServiceClientImpl,
+	public synchronized void movePlayer(SHServiceClient shServiceClientImpl,
 			char movement) throws RemoteException {
 		
 		if(movement == 'r') this.movePlayerToRight(shServiceClientImpl);

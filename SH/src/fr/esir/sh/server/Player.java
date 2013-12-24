@@ -6,9 +6,9 @@ public class Player{
 
 	private int x;
 	private int y;
-	private SHServiceClientImpl shServiceClientM;
+	private SHServiceClient shServiceClientM;
 	
-	public Player(SHServiceClientImpl shServiceClientM){
+	public Player(SHServiceClient shServiceClientM){
 		
 		this.shServiceClientM = shServiceClientM;
 		
@@ -44,7 +44,7 @@ public class Player{
 		this.y = y;
 	}
 
-	public SHServiceClientImpl getShServiceClientM() {
+	public SHServiceClient getShServiceClientM() {
 		
 		return shServiceClientM;
 	}

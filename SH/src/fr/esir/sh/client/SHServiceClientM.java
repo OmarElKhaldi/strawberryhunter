@@ -18,15 +18,15 @@ import javax.swing.JFrame;
 import fr.esir.sh.client.guicomponents.Circle;
 import fr.esir.sh.client.guicomponents.Point;
 import fr.esir.sh.client.guicomponents.Rectangle;
-import fr.esir.sh.server.SHServiceClientImpl;
+import fr.esir.sh.server.SHServiceClient;
 
-public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implements Serializable, SHServiceClientImpl{
+public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implements Serializable, SHServiceClient{
 	
 	private int clientId;
 	private static final long serialVersionUID = 1L;
 	private SHService shService;
 	private SHServiceClientV shServiceClientV;
-	private List<SHServiceClientImpl> listClients= new ArrayList<SHServiceClientImpl>();
+	private List<SHServiceClient> listClients= new ArrayList<SHServiceClient>();
 	private Point myPoint;
 	private List<Point> listPoints= new ArrayList<Point>();
 	private int score= 0;
