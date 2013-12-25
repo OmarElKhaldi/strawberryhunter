@@ -17,31 +17,29 @@ public class Rectangle extends AbstractGridShape implements Serializable{
 	
 	public Rectangle(SHServiceClientV display, int rectId, int x, int y, Color color) {
 		  
-	    super(display);
-	    this.shServiceClientV= display;
-	    this.setCoordinates(x, y);
-	    this.rectId= rectId;
-	    this.x= x;
-	    this.y= y;
-	    this.color= color;
-	  }
+	   	super(display);
+	   	this.shServiceClientV= display;
+	   	this.setCoordinates(x, y);
+	   	this.rectId= rectId;
+	   	this.color= color;
+	}
 	  
-	  public void drawShape(Graphics g,int x,int y,int w,int h) {
+	public void drawShape(Graphics g,int x,int y,int w,int h) {
 		  
-	    g.setColor(this.color);
+		g.setColor(this.color);
 	    g.fillRect(x,y,w,h);
-	  }
+	}
 	  
-	  public void setCoordinates(int x, int y){
+	public void setCoordinates(int x, int y){
 		  
-		  this.setX(x);
-		  this.setY(y);
-	  }
+		this.setX(x);
+		this.setY(y);
+	}
 
-	  public SHServiceClientV getSHServiceClientV(){
+	public SHServiceClientV getSHServiceClientV(){
 		  
-		  return this.shServiceClientV;
-	  }
+		return this.shServiceClientV;
+	}
 	
 	public int getRectId() {
 	
@@ -53,20 +51,9 @@ public class Rectangle extends AbstractGridShape implements Serializable{
 	
 		this.rectId = rectId;
 	}
-
-	public int getX() {
-	
-		return x;
-	}
-	
-	public int getY() {
-	
-		return y;
-	}
 	
 	public Color getColor(){
 		
 		return this.color;
-	}
-	
-} // EndClass Rectangle
+	}	
+}
