@@ -1,10 +1,7 @@
 package fr.esir.sh.client;
 
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -12,10 +9,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JFrame;
-
-import fr.esir.sh.client.guicomponents.Circle;
 import fr.esir.sh.client.guicomponents.Point;
 import fr.esir.sh.client.guicomponents.Rectangle;
 import fr.esir.sh.server.SHServiceClient;
@@ -147,32 +140,27 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	private SHService initializeService(){
 		
 		SHService shService;
-		
 		try {
 			
 			shService = (SHService) Naming.lookup("rmi://localhost:8090/SHService");
-			
 		}
 		catch (MalformedURLException e) {
 			
 			throw new IllegalStateException(
 					"MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct",
 					e);
-			
 		}
 		catch (RemoteException e) {
 			
 			throw new IllegalStateException(
-					"MalformedURLException occured. Maybe an exception occured during the execution of a remote method call",
+					"RemoteException occured. Maybe an exception occured during the execution of a remote method call",
 					e);
-			
 		}
 		catch (NotBoundException e) {
 			
 			throw new IllegalStateException(
 					"NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding.",
 					e);
-			
 		}
 		
 		return shService;
@@ -234,9 +222,7 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 			
 			System.err.println("RemoteException occured. the sweets are not loaded in the game map." +
 					"Consequently, this player would not have no sweet in his/her map");
-			
 		}
-		
 		return gameMap;
 	}
 	
@@ -274,10 +260,10 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	public static void main(String[] args) throws InterruptedException {
 	
 		Commands commands1= new Commands(KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT);
-		Commands commands2= new Commands(KeyEvent.VK_Z, KeyEvent.VK_S, KeyEvent.VK_Q, KeyEvent.VK_D);		
+		Commands commands2= new Commands(KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D);		
 		Commands commands3= new Commands(KeyEvent.VK_T, KeyEvent.VK_G, KeyEvent.VK_F, KeyEvent.VK_H);
 		
-		SHServiceClientV shServiceClientV1= new SHServiceClientV(1,commands1);
+		SHServiceClientV shServiceClientV1= new SHServiceClientV(1, commands1);
 		SHServiceClientV shServiceClientV2= new SHServiceClientV(2, commands2);
 		SHServiceClientV shServiceClientV3= new SHServiceClientV(3, commands3);
 		

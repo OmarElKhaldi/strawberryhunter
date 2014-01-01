@@ -5,7 +5,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import fr.esir.sh.client.SHService;
 import fr.esir.sh.client.guicomponents.Rectangle;
 
@@ -15,13 +16,28 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	private int cellSize = 20;
 	private int gridSize = 20;
 	private int numberOfSweets = 10;
-	List<SHServiceClient> listClients= new ArrayList<SHServiceClient>();
-	List<Player> listPlayers= new ArrayList<Player>();
-	boolean[][] gameMap = addSweetsIntoLandscape();
+	private List<SHServiceClient> listClients= new ArrayList<SHServiceClient>();
+	private List<Player> listPlayers= new ArrayList<Player>();
+	private boolean[][] gameMap;
+	private SHServiceServer shServiceServer;
+	private List<SHService> listServices= new ArrayList<SHService>();
+	private Logger logger= LoggerFactory.getLogger(SHServiceImpl.class);
 	
 	public SHServiceImpl() throws java.rmi.RemoteException {
 	
 		super();
+	}
+	
+	@Override
+	public String getServerName(){
+		
+		return this.shServiceServer.getName();
+	}
+	
+	@Override
+	public void setServer(SHServiceServer shServiceServer){
+		
+		this.shServiceServer= shServiceServer;
 	}
 	
 	@Override
@@ -41,6 +57,12 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		
 		return this.numberOfSweets;
 	}
+
+	@Override
+	public void linkToServiceImpl(SHService shService){
+		
+		this.listServices.add(shService);
+	}
 	
 	@Override
 	public boolean[][] getLogicGameMap()  throws RemoteException{
@@ -48,6 +70,22 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return this.gameMap;		
 	}
 	
+	@Override
+	public void setLogicGameMap(boolean[][] gameMap){
+		
+		this.gameMap = gameMap;
+	}
+	
+	@Override
+	public void addSweetsIfPrimary(){
+		
+		if(this.shServiceServer.getIsPrimary()){
+			
+			gameMap = addSweetsIntoLandscape();
+		}
+			
+	}
+
 	private boolean[][] addSweetsIntoLandscape(){
 		
 		boolean[][] gameMap = new boolean[gridSize][gridSize];
@@ -66,23 +104,37 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 			
 	    }
 		
+		//TODO: Put this code below in another function
+		for(SHService shService : listServices){
+			
+			try {
+				
+				shService.setLogicGameMap(gameMap);
+			}
+			catch (RemoteException e) {
+				
+				String errorMsg= "RemoteException occured. Could not reach the servers to set their logic game map.";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg);
+			}
+		}
+			
 		return gameMap;
 	}
 	
 	private boolean verifyIfEmptyPos(int x, int y){
 		
 		boolean empty= true;
-		
 		for(Player player: this.listPlayers)
-			
 			if(player.getX() == x && player.getY() == y)	empty= false;
 		
 		return empty;
 	}
 
-	private void movePlayerToRight(SHServiceClient shServiceClient)
-			throws RemoteException {	
+	private void movePlayerToRight(SHServiceClient shServiceClient) throws RemoteException {
 
+		logger.info("The ("+this.getServerName()+") server is moving the player to the right");
+		
 		Player player= fetch(shServiceClient);
 		
 		if(player == null)	
@@ -97,8 +149,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		}
 	}
 	
-	private int[] moveToRight(Player player, SHServiceClient shServiceClient) 
-			throws RemoteException{
+	private int[] moveToRight(Player player, SHServiceClient shServiceClient) throws RemoteException{
 		
 		int x = player.getX();
 		int y = player.getY();
@@ -114,8 +165,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return result;
 	}
 
-	private void movePlayerToLeft(SHServiceClient shServiceClient)
-			throws RemoteException {
+	private void movePlayerToLeft(SHServiceClient shServiceClient) throws RemoteException {
 	
 		
 		Player player= fetch(shServiceClient);
@@ -132,8 +182,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		}
 	}
 
-	private int[] moveToLeft(Player player, SHServiceClient shServiceClient) 
-			throws RemoteException{
+	private int[] moveToLeft(Player player, SHServiceClient shServiceClient) throws RemoteException{
 		
 		int x = player.getX();
 		int y = player.getY();
@@ -292,11 +341,14 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	@Override
 	public void addNewPlayer(SHServiceClient shServiceClient, int id) throws RemoteException {
 		
-		listClients.add(shServiceClient);
+		//We notify the other servers about the update
+		for(SHService shService : listServices)
+			shService.addNewPlayer(shServiceClient, id);
 		
+		//Then we answer to the request of the client
+		listClients.add(shServiceClient);
 		Player player1= new Player(shServiceClient);
 		listPlayers.add(player1);
-		
 		addRectangleIntoLandscape();
 	}
 	
@@ -325,6 +377,11 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	public synchronized void movePlayer(SHServiceClient shServiceClientImpl,
 			char movement) throws RemoteException {
 		
+		//First, we send the request to the servers linked to this one for the update
+		for(SHService shServiceImpl: listServices)
+			shServiceImpl.movePlayer(shServiceClientImpl, movement);
+		
+		//Then we execute the request
 		if(movement == 'r') this.movePlayerToRight(shServiceClientImpl);
 		if(movement == 'l') this.movePlayerToLeft(shServiceClientImpl);
 		if(movement == 'u') this.movePlayerToUp(shServiceClientImpl);
