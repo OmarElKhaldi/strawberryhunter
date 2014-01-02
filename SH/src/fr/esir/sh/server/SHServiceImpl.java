@@ -1,6 +1,9 @@
 package fr.esir.sh.server;
 
 import java.awt.Color;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,10 +61,54 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return this.numberOfSweets;
 	}
 
-	@Override
+	/*@Override
 	public void linkToServiceImpl(SHService shService){
 		
 		this.listServices.add(shService);
+		try {
+			
+			shService.linkToServiceFromOneSide(this);
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException ocured. ("+this.getServerName()+") successfully added a new server but not from the other side.";
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg);
+		}
+	}
+	
+	@Override
+	public void linkToServiceFromOneSide(SHService shService){
+	
+		this.listServices.add(shService);
+	}*/
+	
+	@Override
+	public void addService(String hostAdress, int port){
+		
+		try {
+			
+			SHService shService = (SHService) Naming.lookup("rmi://"+hostAdress+":"+port+"/SHService");
+			this.listServices.add(shService);
+		}
+		catch (MalformedURLException e) {
+			
+			String errorMsg= "MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct";
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg, e);
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. ("+this.getServerName()+") could not reach the server to add on the server's network.";
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg, e);
+		}
+		catch (NotBoundException e) {
+			
+			String errorMsg= "NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding."; 
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg, e);
+		}
 	}
 	
 	@Override
@@ -349,6 +396,8 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		listClients.add(shServiceClient);
 		Player player1= new Player(shServiceClient);
 		listPlayers.add(player1);
+		shServiceClient.addServer(this);
+		logger.info("Server ("+this.getServerName()+") is adding the client ("+shServiceClient.getClientId()+")");
 		addRectangleIntoLandscape();
 	}
 	

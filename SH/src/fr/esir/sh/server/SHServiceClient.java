@@ -22,4 +22,5 @@ public interface SHServiceClient extends java.rmi.Remote{
 	public void addScore() throws RemoteException;
 	public int getScore() throws RemoteException;
 	public void removeSweetFromServer(int x, int y) throws RemoteException;
+	public void addServer(SHService shService) throws RemoteException;
 }

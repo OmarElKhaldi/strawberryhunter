@@ -13,16 +13,21 @@ import fr.esir.sh.client.SHService;
 public class SHServiceServer{
 	
 	private String name;
-	private Logger logger= LoggerFactory.getLogger(SHServiceServer.class);
+	private String hostAdress;
+	private int port;
 	private SHService shService;
 	private boolean isPrimary;
+	private Logger logger= LoggerFactory.getLogger(SHServiceServer.class);
 	
 	public SHServiceServer(String hostAdress, int port, boolean isPrimary) {
 	
 		try {
 			
 			this.setName(isPrimary);
+			this.setHostAdress(hostAdress);
+			this.setPort(port);
 			this.setIsPrimary(isPrimary);
+			
 			LocateRegistry.createRegistry(port);
 			shService = new SHServiceImpl();
 			Naming.rebind("rmi://"+hostAdress+":"+port+"/SHService", shService);
@@ -55,6 +60,26 @@ public class SHServiceServer{
 		else
 			this.name= "Backup";
 	}
+
+	public String getHostAdress(){
+		
+		return this.hostAdress;
+	}
+	
+	public void setHostAdress(String hostAdress){
+		
+		this.hostAdress= hostAdress;
+	}
+	
+	public int getPort(){
+		
+		return this.port;
+	}
+
+	public void setPort(int port){
+		
+		this.port= port;
+	}
 	
 	public SHService getSHService(){
 		
@@ -73,28 +98,27 @@ public class SHServiceServer{
 	
 	public void linkToServer(String hostAdress, int port){
 		
-		try{
-			
+		
+		try {
 			SHService shService = (SHService) Naming.lookup("rmi://"+hostAdress+":"+port+"/SHService");
-			this.shService.linkToServiceImpl(shService);
-			logger.info("("+this.name+") server is linked to ("+shService.getServerName()+")");
+			shService.addService(this.getHostAdress(), this.getPort());
 		}
-		catch(NotBoundException e){
-			
-			throw new IllegalStateException(
-					"NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding.",
-					e);
-		}
-		catch(RemoteException e){
-			
-			throw new IllegalStateException(
-					"RemoteException occured. Maybe an exception occured during the execution of a remote method call",
-					e);
-		}
-		catch(MalformedURLException e){
+		catch (MalformedURLException e) {
 			
 			throw new IllegalStateException(
 					"MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct",
+					e);
+		}
+		catch (RemoteException e) {
+			
+			throw new IllegalStateException(
+					"RemoteException occured. ("+this.getName()+") could not reach a server to add him in the server's set.",
+					e);
+		}
+		catch (NotBoundException e) {
+			
+			throw new IllegalStateException(
+					"NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding.",
 					e);
 		}
 	}

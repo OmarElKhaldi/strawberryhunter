@@ -9,9 +9,14 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.esir.sh.client.guicomponents.Point;
 import fr.esir.sh.client.guicomponents.Rectangle;
 import fr.esir.sh.server.SHServiceClient;
+import fr.esir.sh.server.SHServiceImpl;
 
 public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implements Serializable, SHServiceClient{
 	
@@ -23,7 +28,9 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	private Point myPoint;
 	private List<Point> listPoints= new ArrayList<Point>();
 	private int score= 0;
-	boolean[][] logicGameMap= null;
+	private boolean[][] logicGameMap= null;
+	private List<SHService> listServers= new ArrayList<SHService>();
+	private Logger logger= LoggerFactory.getLogger(SHServiceClientM.class);
 	
 	public SHServiceClientM(int clientId, int x, int y, Color color, SHServiceClientV shServiceClientV) throws RemoteException{
 		
@@ -103,6 +110,7 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		try{
 			
 			this.shServiceClientV.addNewPlayer();
+			
 		    shService.addNewPlayer(this, clientId);
 		}
 		catch(RemoteException e){
@@ -238,6 +246,7 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		int otherId= -1;
 		
 		try {
+			
 			otherId = shServiceClientM.getClientId();
 		}
 		catch (RemoteException e) {
@@ -255,6 +264,21 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	public void getPointAndChange(Color color, int result[]){
 
 		shServiceClientV.changeRectanglePos(color, result);
+	}
+
+	@Override
+	public void addServer(SHService shService) throws RemoteException {
+	
+		this.listServers.add(shService);
+		try {
+			
+			logger.info("Client ("+this.clientId+") is adding the server ("+shService.getServerName()+")");
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the server to get it's name in order to display it.";
+			logger.error(errorMsg);
+		}
 	}
 	
 }

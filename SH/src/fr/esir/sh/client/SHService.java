@@ -15,7 +15,9 @@ public interface SHService extends java.rmi.Remote{
     public void movePlayer(SHServiceClient shServiceClientImpl, char movement) throws RemoteException;
     public void setServer(SHServiceServer shServiceServer) throws RemoteException;
     public String getServerName() throws RemoteException;
-    public void linkToServiceImpl(SHService shService) throws RemoteException;
+    //public void linkToServiceImpl(SHService shService) throws RemoteException;
     public void setLogicGameMap(boolean[][] gameMap) throws RemoteException;
     public void addSweetsIfPrimary() throws RemoteException;
+    //public void linkToServiceFromOneSide(SHService shService) throws RemoteException;
+    public void addService(String hostAdress, int port) throws RemoteException;
 }
