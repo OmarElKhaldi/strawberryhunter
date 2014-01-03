@@ -1,13 +1,10 @@
 package fr.esir.sh.server;
 
 import static org.junit.Assert.*;
-
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
