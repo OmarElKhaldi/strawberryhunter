@@ -60,6 +60,12 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		
 		return this.numberOfSweets;
 	}
+	
+	@Override
+	public List<SHServiceClient> getListClients(){
+		
+		return this.listClients;
+	}
 
 	/*@Override
 	public void linkToServiceImpl(SHService shService){

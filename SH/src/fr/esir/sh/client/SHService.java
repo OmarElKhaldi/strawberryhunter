@@ -1,6 +1,8 @@
 package fr.esir.sh.client;
 
 import java.rmi.RemoteException;
+import java.util.List;
+
 import fr.esir.sh.server.SHServiceClient;
 import fr.esir.sh.server.SHServiceImpl;
 import fr.esir.sh.server.SHServiceServer;
@@ -20,4 +22,5 @@ public interface SHService extends java.rmi.Remote{
     public void addSweetsIfPrimary() throws RemoteException;
     //public void linkToServiceFromOneSide(SHService shService) throws RemoteException;
     public void addService(String hostAdress, int port) throws RemoteException;
+    public List<SHServiceClient> getListClients() throws RemoteException;
 }

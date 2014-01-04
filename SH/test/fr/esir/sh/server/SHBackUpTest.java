@@ -2,7 +2,9 @@ package fr.esir.sh.server;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,7 +23,9 @@ public class SHBackUpTest{
 	private static int primaryLength;
 	private static int backupLength;
 	private static SHServiceServer primaryServer;
-	private static SHServiceServer backupServer;	
+	private static SHServiceServer backupServer;
+	private static int primaryClientsNb;
+	private static int backupClientsNb;
 	
 	@BeforeClass
 	public static void onlyOnce(){
@@ -56,11 +60,11 @@ public class SHBackUpTest{
 	}
 	
 	@Test
-	public void testGetGameMapForPrimaryAndBackup(){
-		
+	public void testReachPrimaryAndBackup(){
 		
 		assertTrue("RemoteException occured. Could not reach the method that gets the gameMap to extract the size of the primary landscape.", primaryLength != -1);
 		assertTrue("RemoteException occured. Could not reach the method that gets the gameMap to extract the size of the backup landscape.", backupLength != -1);		
+		assertTrue("RemoteException occured. Could not reach the method that gets the number of the clients.", primaryClientsNb != -1);
 	}
 	
 	@Test
@@ -88,7 +92,7 @@ public class SHBackUpTest{
 	}
 	
 	@Test
-	public void compareLandscapeContents(){
+	public void testCompareLandscapeContents(){
 		
 		boolean primaryGameMap[][]= getGameMapFromServer(primaryServer);
 		boolean backupGameMap[][]= getGameMapFromServer(backupServer);
@@ -102,6 +106,11 @@ public class SHBackUpTest{
 		}
 	}	
 
+	public void testNumberOfPlayers(){
+		
+
+	}
+	
 	//Private methods===================================================================================================
 	private static int getGameMapLengthFromServer(SHServiceServer server){
 		
@@ -138,4 +147,21 @@ public class SHBackUpTest{
 		return gameMap;
 	}
 	
+	private int getNumberOfPlayersFromServer(SHServiceServer shServiceServer){
+		
+		int playersNb;
+		
+		try {
+			
+			SHService shService= shServiceServer.getSHService();
+			List<SHServiceClient> listClients= shService.getListClients();
+			playersNb= listClients.size();
+		}
+		catch (RemoteException e) {
+			
+			playersNb= -1;
+		}
+		
+		return playersNb;
+	}
 }
