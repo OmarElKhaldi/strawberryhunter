@@ -102,6 +102,8 @@ public class SHServiceServer{
 		try {
 			SHService shService = (SHService) Naming.lookup("rmi://"+hostAdress+":"+port+"/SHService");
 			shService.addService(this.getHostAdress(), this.getPort());
+			if(shService.getIsPrimary())
+				this.shService.addPrimaryIfBackup(shService);
 		}
 		catch (MalformedURLException e) {
 			
@@ -121,5 +123,11 @@ public class SHServiceServer{
 					"NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding.",
 					e);
 		}
+	}
+
+	public void loadServer() throws RemoteException{
+		
+		this.getSHService().addSweetsIfPrimary();
+		this.getSHService().getPlayersFromPrimaryIfBackup();
 	}
 }

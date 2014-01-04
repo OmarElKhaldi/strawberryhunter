@@ -23,4 +23,7 @@ public interface SHService extends java.rmi.Remote{
     //public void linkToServiceFromOneSide(SHService shService) throws RemoteException;
     public void addService(String hostAdress, int port) throws RemoteException;
     public List<SHServiceClient> getListClients() throws RemoteException;
+    public void getPlayersFromPrimaryIfBackup() throws RemoteException;
+    public boolean getIsPrimary() throws RemoteException;
+    public void addPrimaryIfBackup(SHService shService) throws RemoteException;
 }

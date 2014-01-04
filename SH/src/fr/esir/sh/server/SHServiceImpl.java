@@ -23,6 +23,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	private List<Player> listPlayers= new ArrayList<Player>();
 	private boolean[][] gameMap;
 	private SHServiceServer shServiceServer;
+	private SHService primaryService= null;
 	private List<SHService> listServices= new ArrayList<SHService>();
 	private Logger logger= LoggerFactory.getLogger(SHServiceImpl.class);
 	
@@ -67,6 +68,13 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return this.listClients;
 	}
 
+	@Override
+	public boolean getIsPrimary(){
+		
+		boolean isPrimary= this.shServiceServer.getIsPrimary();
+		return isPrimary;
+	}
+	
 	/*@Override
 	public void linkToServiceImpl(SHService shService){
 		
@@ -132,13 +140,34 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	@Override
 	public void addSweetsIfPrimary(){
 		
-		if(this.shServiceServer.getIsPrimary()){
-			
+		if(this.getIsPrimary())
 			gameMap = addSweetsIntoLandscape();
-		}
-			
 	}
-
+	
+	@Override
+	public void addPrimaryIfBackup(SHService shService){
+		
+		this.primaryService= shService;
+	}
+	
+	@Override
+	public void getPlayersFromPrimaryIfBackup(){
+		
+		if(!this.getIsPrimary()){
+			
+			try {
+				
+				List<SHServiceClient> primaryListClients = this.primaryService.getListClients();
+				this.listClients.addAll(primaryListClients);
+			}
+			catch (RemoteException e) {
+				
+				throw new IllegalStateException("RemoteException occured. Could not reach the clients list of the primary server. " +
+												"\nConsequently, the backup server will not add the clients list.", e);
+			}
+		}
+	}
+	
 	private boolean[][] addSweetsIntoLandscape(){
 		
 		boolean[][] gameMap = new boolean[gridSize][gridSize];
@@ -252,7 +281,6 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return result;
 	}
 	
-
 	private void movePlayerToDown(SHServiceClient shServiceClient)
 			throws RemoteException {
 	
@@ -287,7 +315,6 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return result;
 	}
 	
-
 	private void movePlayerToUp(SHServiceClient shServiceClientM)
 			throws RemoteException {
 		
@@ -404,7 +431,9 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		listPlayers.add(player1);
 		shServiceClient.addServer(this);
 		logger.info("Server ("+this.getServerName()+") is adding the client ("+shServiceClient.getClientId()+")");
-		addRectangleIntoLandscape();
+		//TODO I am not sure that I need to put the condition below to add rectangles.
+		if(this.shServiceServer.getIsPrimary())
+			addRectangleIntoLandscape();
 	}
 	
 	private void addRectangleIntoLandscape() throws RemoteException{
@@ -421,7 +450,6 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 				Rectangle rectangle= clientReceiver.getMyRectangle();			
 				
 				if(senderId != receiverId)
-					
 					clientReceiver.addRectangle(senderId, x, y, color);
 				
 			}
