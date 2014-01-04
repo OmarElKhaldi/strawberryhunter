@@ -24,7 +24,7 @@ import fr.esir.sh.client.SHServiceClientV;
  * =====================================================================================================================*/
 public class SHBackUpTest{
 	
-	static Logger logger;
+	private static Logger logger;
 	private static int primaryLength;
 	private static int backupLength;
 	private static SHServiceServer primaryServer;

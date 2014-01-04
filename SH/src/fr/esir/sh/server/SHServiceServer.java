@@ -104,24 +104,27 @@ public class SHServiceServer{
 			shService.addService(this.getHostAdress(), this.getPort());
 			if(shService.getIsPrimary())
 				this.shService.addPrimaryIfBackup(shService);
+			
+			logger.info("Server at ("+hostAdress+":"+port+") linked to server at("+this.hostAdress+":"+this.port+")");
 		}
 		catch (MalformedURLException e) {
 			
-			throw new IllegalStateException(
-					"MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct",
-					e);
+			String errorMsg= "MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct";
+			logger.error(errorMsg);
+			throw new IllegalStateException( errorMsg ,e);
 		}
 		catch (RemoteException e) {
 			
-			throw new IllegalStateException(
-					"RemoteException occured. ("+this.getName()+") could not reach a server to add him in the server's set.",
-					e);
+			String errorMsg= "RemoteException occured. ("+this.getName()+") could not reach a server to add him in the server's set.";
+			logger.error(errorMsg);
+			throw new IllegalStateException( errorMsg ,e);
+			
 		}
 		catch (NotBoundException e) {
 			
-			throw new IllegalStateException(
-					"NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding.",
-					e);
+			String errorMsg= "NotBoundException occured while lookimg up or unbinding in the registry a name that has no associated binding.";
+			logger.error(errorMsg);
+			throw new IllegalStateException( errorMsg ,e);
 		}
 	}
 

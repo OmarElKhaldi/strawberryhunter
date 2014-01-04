@@ -16,7 +16,7 @@ public class ServerMain {
 		//Therefore, those clients are linked to the backup server.
 		//=====================================================================================================================
 		
-		boolean isPrimary= true;
+/*		boolean isPrimary= true;
 		String hostAdress= "localhost";
 		int port= 8090;
 		SHServiceServer shServiceServer= new SHServiceServer(hostAdress, port, isPrimary);
@@ -35,7 +35,44 @@ public class ServerMain {
 			String errorMsg= "RemoteException occured. Could not reach the method that fills the servers with sweets.";
 			logger.error(errorMsg);
 			throw new IllegalStateException(errorMsg);
+		}*/
+		
+		SHServiceServer primaryServer;
+		SHServiceServer backupServer;
+		//We instantiate the logger
+		logger= LoggerFactory.getLogger(SHServiceServer.class);
+		
+		//We create the primary server
+		boolean isPrimary= true;
+		String hostAdress= "localhost";
+		int port= 8090;
+		primaryServer= new SHServiceServer(hostAdress, port, isPrimary);
+		
+		//We create the backup Server
+		isPrimary= false;
+		port= 8091;
+		backupServer= new SHServiceServer(hostAdress, port, isPrimary);
+		backupServer.linkToServer("localhost", 8090);
+		
+		//We load both of the servers.
+		try {
+			
+			primaryServer.loadServer();
+			backupServer.loadServer();
 		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the method that loads the servers.";
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg);
+		}
+
+		
+		
+		
+		
+		
+		
 		
 		//Scenario 2 ==========================================================================================================
 		//Creating a primary server, then we load it by filling the logic matrix of sweets.
