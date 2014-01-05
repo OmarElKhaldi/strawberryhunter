@@ -63,6 +63,12 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	}
 	
 	@Override
+	public boolean[][] getGameMap(){
+		
+		return this.gameMap;
+	}
+	
+	@Override
 	public List<SHServiceClient> getListClients(){
 		
 		return this.listClients;
@@ -162,8 +168,30 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 			}
 			catch (RemoteException e) {
 				
-				throw new IllegalStateException("RemoteException occured. Could not reach the clients list of the primary server. " +
-												"\nConsequently, the backup server will not add the clients list.", e);
+				String errorMsg= "RemoteException occured. Could not reach the clients list of the primary server. " +
+								 "\nConsequently, the backup server will not add the clients list.";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg, e);
+			}
+		}
+	}
+	
+	@Override
+	public void getGameMapFromPrimaryIfBackup(){
+		
+		if(!this.getIsPrimary()){
+			
+			try {
+				
+				boolean gameMap[][]= this.primaryService.getGameMap();
+				this.gameMap= gameMap;
+			}
+			catch (RemoteException e) {
+				
+				String errorMsg= "RemoteException occured. Could not reach the gameMap of the primary server. " +
+						"\nConsequently, the backup server will not add the gameMap.";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg, e);
 			}
 		}
 	}

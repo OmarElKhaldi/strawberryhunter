@@ -1,16 +1,23 @@
 package fr.esir.sh.server;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.esir.sh.client.SHService;
 
-public class SHServiceServer{
+public class SHServiceServer extends JFrame implements ActionListener{
 	
 	private String name;
 	private String hostAdress;
@@ -19,14 +26,21 @@ public class SHServiceServer{
 	private boolean isPrimary;
 	private Logger logger= LoggerFactory.getLogger(SHServiceServer.class);
 	
+	private JLabel lblName;
+	private JButton btnKill;
+	
 	public SHServiceServer(String hostAdress, int port, boolean isPrimary) {
 	
+		super("Server killer");
+		this.setName(isPrimary);
+		lblName= new JLabel(this.getName());
+		btnKill= new JButton("Kill server !");
+		
+		this.setHostAdress(hostAdress);
+		this.setPort(port);
+		this.setIsPrimary(isPrimary);
+		
 		try {
-			
-			this.setName(isPrimary);
-			this.setHostAdress(hostAdress);
-			this.setPort(port);
-			this.setIsPrimary(isPrimary);
 			
 			LocateRegistry.createRegistry(port);
 			shService = new SHServiceImpl();
@@ -45,6 +59,13 @@ public class SHServiceServer{
 					"MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct.", e);
 		}
 		
+		btnKill.addActionListener(this);
+		this.add(lblName);
+		this.add(btnKill);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setSize(300, 300);
+		this.pack();
+		this.setVisible(true);
 	}
 	
 	public String getName(){
@@ -132,5 +153,14 @@ public class SHServiceServer{
 		
 		this.getSHService().addSweetsIfPrimary();
 		this.getSHService().getPlayersFromPrimaryIfBackup();
+		this.getSHService().getGameMapFromPrimaryIfBackup();
+	}
+
+	@Override
+	public void actionPerformed(
+			ActionEvent e) {
+	
+		this.dispose();
+		
 	}
 }

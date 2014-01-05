@@ -37,18 +37,29 @@ public class ServerMain {
 			throw new IllegalStateException(errorMsg);
 		}*/
 		
-		SHServiceServer primaryServer;
-		SHServiceServer backupServer;
 		//We instantiate the logger
 		logger= LoggerFactory.getLogger(SHServiceServer.class);
 		
 		//We create the primary server
+		SHServiceServer primaryServer;
 		boolean isPrimary= true;
 		String hostAdress= "localhost";
 		int port= 8090;
 		primaryServer= new SHServiceServer(hostAdress, port, isPrimary);
 		
+		try {
+			
+			primaryServer.loadServer();
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the method that loads the servers.";
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg);
+		}
+		
 		//We create the backup Server
+		SHServiceServer backupServer;
 		isPrimary= false;
 		port= 8091;
 		backupServer= new SHServiceServer(hostAdress, port, isPrimary);
@@ -57,7 +68,6 @@ public class ServerMain {
 		//We load both of the servers.
 		try {
 			
-			primaryServer.loadServer();
 			backupServer.loadServer();
 		}
 		catch (RemoteException e) {
@@ -66,13 +76,6 @@ public class ServerMain {
 			logger.error(errorMsg);
 			throw new IllegalStateException(errorMsg);
 		}
-
-		
-		
-		
-		
-		
-		
 		
 		//Scenario 2 ==========================================================================================================
 		//Creating a primary server, then we load it by filling the logic matrix of sweets.

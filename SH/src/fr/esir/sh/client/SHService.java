@@ -26,4 +26,6 @@ public interface SHService extends java.rmi.Remote{
     public void getPlayersFromPrimaryIfBackup() throws RemoteException;
     public boolean getIsPrimary() throws RemoteException;
     public void addPrimaryIfBackup(SHService shService) throws RemoteException;
+    public boolean[][] getGameMap() throws RemoteException;
+    public void getGameMapFromPrimaryIfBackup() throws RemoteException;
 }
