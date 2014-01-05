@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.esir.sh.client.SHService;
 
-public class SHServiceServer extends JFrame implements ActionListener{
+public class SHServiceServer extends JFrame{
 	
 	private String name;
 	private String hostAdress;
@@ -27,14 +27,12 @@ public class SHServiceServer extends JFrame implements ActionListener{
 	private Logger logger= LoggerFactory.getLogger(SHServiceServer.class);
 	
 	private JLabel lblName;
-	private JButton btnKill;
 	
 	public SHServiceServer(String hostAdress, int port, boolean isPrimary) {
 	
-		super("Server killer");
+		super("Server GUI");
 		this.setName(isPrimary);
-		lblName= new JLabel(this.getName());
-		btnKill= new JButton("Kill server !");
+		lblName= new JLabel("This is the "+this.getName()+" server.");
 		
 		this.setHostAdress(hostAdress);
 		this.setPort(port);
@@ -59,12 +57,9 @@ public class SHServiceServer extends JFrame implements ActionListener{
 					"MalformedURLException occured. Please check if the host name and/or the port number and/or the name of the service is/are correct.", e);
 		}
 		
-		btnKill.addActionListener(this);
 		this.add(lblName);
-		this.add(btnKill);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(300, 300);
-		this.pack();
+		this.setSize(250, 100);
 		this.setVisible(true);
 	}
 	
@@ -154,13 +149,5 @@ public class SHServiceServer extends JFrame implements ActionListener{
 		this.getSHService().addSweetsIfPrimary();
 		this.getSHService().getPlayersFromPrimaryIfBackup();
 		this.getSHService().getGameMapFromPrimaryIfBackup();
-	}
-
-	@Override
-	public void actionPerformed(
-			ActionEvent e) {
-	
-		this.dispose();
-		
 	}
 }
