@@ -31,11 +31,15 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	private boolean[][] logicGameMap= null;
 	private List<SHService> listServers= new ArrayList<SHService>();
 	private Logger logger= LoggerFactory.getLogger(SHServiceClientM.class);
+	private String serverHostAdress;
+	private int serverPort;
 	
-	public SHServiceClientM(int clientId, int x, int y, Color color, SHServiceClientV shServiceClientV) throws RemoteException{
+	public SHServiceClientM(int clientId, int x, int y, Color color, SHServiceClientV shServiceClientV, String serverHostAdress, int serverPort) throws RemoteException{
 		
 		super();		
 		this.clientId= clientId;		
+		this.serverHostAdress= serverHostAdress;
+		this.serverPort= serverPort;
 		this.shServiceClientV= shServiceClientV;
 		this.shServiceClientV.setX(x);
 		this.shServiceClientV.setY(y);
@@ -105,6 +109,18 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		return this.score;
 	}
 	
+	@Override
+	public String getServerHostAdress(){
+		
+		return this.serverHostAdress;
+	}
+	
+	@Override
+	public int getServerPort(){
+		
+		return this.serverPort;
+	}
+	
 	public void addNewPlayer(){
 		
 		try{
@@ -145,12 +161,20 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		this.listPoints.add(point);
 	}*/
 	
+	public void reinitializeService(String hostAdress, int port){
+		
+		this.serverHostAdress= hostAdress;
+		this.serverPort= port;
+		this.shService= this.initializeService();
+		logger.warn("The connexion of the client ("+this.clientId+") is reinitialized to the server at ("+this.serverHostAdress+", "+this.serverPort+")");
+	}
+	
 	private SHService initializeService(){
 		
 		SHService shService;
 		try {
 			
-			shService = (SHService) Naming.lookup("rmi://localhost:8090/SHService");
+			shService = (SHService) Naming.lookup("rmi://"+this.serverHostAdress+":"+this.serverPort+"/SHService");
 		}
 		catch (MalformedURLException e) {
 			

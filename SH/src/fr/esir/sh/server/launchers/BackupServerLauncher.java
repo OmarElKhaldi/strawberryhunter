@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.esir.sh.server.SHServiceServer;
 
-
 public class BackupServerLauncher {
 	
 	public static void main(String[] args) {

@@ -12,6 +12,9 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.esir.sh.client.guicomponents.Circle;
 import fr.esir.sh.client.guicomponents.Rectangle;
 import fr.esir.sh.server.SHServiceClient;
@@ -31,6 +34,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 	List<Rectangle> listRectangles= new ArrayList<Rectangle>();
 	private SHServiceClient shServiceClientM;
 	private Commands commands;
+	private Logger logger= LoggerFactory.getLogger(SHServiceClientM.class);
 	
 	public SHServiceClientV(int clientId, Commands commands){
 		
@@ -105,6 +109,42 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 	public SHServiceClient getModel(){
 		
 		return this.shServiceClientM;
+	}
+	
+	public String getServerHostAdress(){
+		
+		String hostAdress= null;
+		
+		try {
+			
+			hostAdress = this.shServiceClientM.getServerHostAdress();
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the model linked to this vue in order to get the server's host adress";
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg);
+		}
+		
+		return hostAdress;
+	}
+	
+	public int getServerPort(){
+		
+		int port= 0;
+		
+		try {
+			
+			port = this.shServiceClientM.getServerPort();
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the model linked to this vue in order to get the server's host adress";
+			logger.error(errorMsg);
+			throw new IllegalStateException(errorMsg);
+		}
+		
+		return port;
 	}
 
 	public void initializeFrame(){
@@ -192,8 +232,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		  }
 		  catch(RemoteException re){
 			  
-			System.err.println("RemoteException occured. Could not reach the server to move the player. " +
-			  				   "Consequently, the player will stay in his place.");
+			  logger.error("Could not reach the server at ("+this.getServerHostAdress()+", "+this.getServerPort()+")");
 		  }
 	}
 	

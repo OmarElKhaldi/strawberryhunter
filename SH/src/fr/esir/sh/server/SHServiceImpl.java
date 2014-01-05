@@ -406,7 +406,10 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 				
 				shServiceClient.addScore();
 				SHServiceClient winner= this.getWinner();
-				ScoreDisplayer scoreDisplayer= new ScoreDisplayer(winner.getClientId(), winner.getColor(), winner.getScore());
+				if(this.getIsPrimary()){
+				
+					ScoreDisplayer scoreDisplayer= new ScoreDisplayer(winner.getClientId(), winner.getColor(), winner.getScore());
+				}
 			}
 		}catch(RemoteException e){
 			
