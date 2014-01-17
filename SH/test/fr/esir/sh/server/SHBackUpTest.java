@@ -2,20 +2,14 @@ package fr.esir.sh.server;
 
 import static org.junit.Assert.*;
 
-import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.rmi.RemoteException;
 import java.util.List;
-
+import junit.framework.TestCase;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import fr.esir.sh.client.Commands;
 import fr.esir.sh.client.SHService;
-import fr.esir.sh.client.SHServiceClientM;
-import fr.esir.sh.client.SHServiceClientV;
 import fr.esir.sh.server.commonmethods.CommonMethodsForTest;
 
 /**Scenario 1 ==========================================================================================================
@@ -35,7 +29,7 @@ public class SHBackUpTest{
 	private static List<SHServiceClient> backupListClients;
 	
 	@BeforeClass
-	public static void onlyOnce(){
+	public static void setUp(){
 		
 		//We instantiate the logger
 		logger= LoggerFactory.getLogger(SHServiceServer.class);
@@ -44,12 +38,12 @@ public class SHBackUpTest{
 		boolean isPrimary= true;
 		String hostAdress= "localhost";
 		int port= 8090;
-		primaryServer= new SHServiceServer(hostAdress, port, isPrimary);
+		primaryServer= new SHServiceServer(hostAdress, port, isPrimary, 1);
 		
 		//We create the backup Server
 		isPrimary= false;
 		port= 8091;
-		backupServer= new SHServiceServer(hostAdress, port, isPrimary);
+		backupServer= new SHServiceServer(hostAdress, port, isPrimary, 2);
 		backupServer.linkToServer("localhost", 8090);
 		
 		//We load both of the servers.

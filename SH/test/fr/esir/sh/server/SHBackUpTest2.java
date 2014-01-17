@@ -26,9 +26,7 @@ public class SHBackUpTest2 {
 		
 		//We create the primary server
 		boolean isPrimary= true;
-		String hostAdress= "localhost";
-		int port= 8090;
-		primaryServer= new SHServiceServer(hostAdress, port, isPrimary);
+		primaryServer= new SHServiceServer("localhost", 8090, isPrimary, 1);
 		
 		//We load the primary server.
 		try {

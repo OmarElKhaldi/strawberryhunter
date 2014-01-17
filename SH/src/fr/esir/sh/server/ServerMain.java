@@ -45,7 +45,7 @@ public class ServerMain {
 		boolean isPrimary= true;
 		String hostAdress= "localhost";
 		int port= 8090;
-		primaryServer= new SHServiceServer(hostAdress, port, isPrimary);
+		primaryServer= new SHServiceServer(hostAdress, port, isPrimary, 1);
 		
 		try {
 			
@@ -62,7 +62,7 @@ public class ServerMain {
 		SHServiceServer backupServer;
 		isPrimary= false;
 		port= 8091;
-		backupServer= new SHServiceServer(hostAdress, port, isPrimary);
+		backupServer= new SHServiceServer(hostAdress, port, isPrimary, 2);
 		backupServer.linkToServer("localhost", 8090);
 		
 		//We load both of the servers.

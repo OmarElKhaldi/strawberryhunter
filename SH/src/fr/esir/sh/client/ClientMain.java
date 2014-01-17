@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.rmi.RemoteException;
 
+import fr.esir.sh.client.guicomponents.Commands;
+
 public class ClientMain {
 	
 	public static void main(String[] args) {

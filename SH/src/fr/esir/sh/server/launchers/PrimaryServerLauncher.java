@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.esir.sh.server.SHServiceServer;
 
-
 public class PrimaryServerLauncher {
 	
 	public static void main(String[] args) {
@@ -16,9 +15,7 @@ public class PrimaryServerLauncher {
 		
 		SHServiceServer primaryServer;
 		boolean isPrimary= true;
-		String hostAdress= "localhost";
-		int port= 8090;
-		primaryServer= new SHServiceServer(hostAdress, port, isPrimary);
+		primaryServer= new SHServiceServer("localhost", 8090, isPrimary, 1);
 		
 		try {
 			

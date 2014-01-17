@@ -15,11 +15,8 @@ public class BackupServerLauncher {
 		
 		SHServiceServer backupServer;
 		boolean isPrimary= false;
-		String hostAdress="localhost";
-		int port= 8091;
-		backupServer= new SHServiceServer(hostAdress, port, isPrimary);
+		backupServer= new SHServiceServer("localhost", 8091, isPrimary, 2);
 		backupServer.linkToServer("localhost", 8090);
-		
 		
 		try {
 			

@@ -29,10 +29,11 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	private List<Point> listPoints= new ArrayList<Point>();
 	private int score= 0;
 	private boolean[][] logicGameMap= null;
-	private List<SHService> listServers= new ArrayList<SHService>();
-	private Logger logger= LoggerFactory.getLogger(SHServiceClientM.class);
+	//private List<SHService> listServers= new ArrayList<SHService>();
 	private String serverHostAdress;
 	private int serverPort;
+	private List<SHService> listLinksOfServices= new ArrayList<SHService>();
+	private Logger logger= LoggerFactory.getLogger(SHServiceClientM.class);
 	
 	public SHServiceClientM(int clientId, int x, int y, Color color, SHServiceClientV shServiceClientV, String serverHostAdress, int serverPort) throws RemoteException{
 		
@@ -121,6 +122,14 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		return this.serverPort;
 	}
 	
+	@Override
+	public List<SHService> getListLinksToServices(){
+		
+		return this.listLinksOfServices;
+	}
+	
+	
+	
 	public void addNewPlayer(){
 		
 		try{
@@ -174,7 +183,11 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		SHService shService;
 		try {
 			
+			//We connect this client to the server
 			shService = (SHService) Naming.lookup("rmi://"+this.serverHostAdress+":"+this.serverPort+"/SHService");
+			//Then we get all the servers linked to this one, it will help us to change the server when this one fails
+			listLinksOfServices.addAll(shService.getListServices());
+			logger.warn("The client ("+this.clientId+") is connected to the server at ("+this.serverHostAdress+", "+this.serverPort+")");
 		}
 		catch (MalformedURLException e) {
 			
@@ -291,6 +304,28 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	}
 
 	@Override
+	public void removeOldService(SHService oldPrimaryService){
+		
+		if(listLinksOfServices.contains(oldPrimaryService)){
+			
+			listLinksOfServices.remove(oldPrimaryService);
+			logger.warn("The client ("+this.clientId+") is not anymore connected to the old server.");
+		}
+			
+	}
+	
+	@Override
+	public void addNewService(SHService newPrimaryService)throws RemoteException{
+		
+		if(!listLinksOfServices.contains(newPrimaryService)){
+			
+			listLinksOfServices.add(newPrimaryService);
+		}
+		this.reinitializeService(newPrimaryService.getHostAdress(), newPrimaryService.getPort());
+		logger.info("The client ("+this.clientId+") is now connected to the server at ("+newPrimaryService.getHostAdress()+":"+newPrimaryService.getHostAdress()+").");
+	}
+	
+/*	@Override
 	public void addServer(SHService shService) throws RemoteException {
 	
 		this.listServers.add(shService);
@@ -303,6 +338,6 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 			String errorMsg= "RemoteException occured. Could not reach the server to get it's name in order to display it.";
 			logger.error(errorMsg);
 		}
-	}
+	}*/
 	
 }

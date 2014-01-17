@@ -1,14 +1,12 @@
 package fr.esir.sh.server;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
+
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -19,21 +17,22 @@ import fr.esir.sh.client.SHService;
 
 public class SHServiceServer extends JFrame{
 	
+	private static final long serialVersionUID = 1L;
 	private String name;
+	private int number;
 	private String hostAdress;
 	private int port;
 	private SHService shService;
 	private boolean isPrimary;
 	private Logger logger= LoggerFactory.getLogger(SHServiceServer.class);
-	
 	private JLabel lblName;
 	
-	public SHServiceServer(String hostAdress, int port, boolean isPrimary) {
+	public SHServiceServer(String hostAdress, int port, boolean isPrimary, int number) {
 	
 		super("Server GUI");
 		this.setName(isPrimary);
+		this.setNumber(number);
 		lblName= new JLabel("This is the "+this.getName()+" server.");
-		
 		this.setHostAdress(hostAdress);
 		this.setPort(port);
 		this.setIsPrimary(isPrimary);
@@ -71,12 +70,17 @@ public class SHServiceServer extends JFrame{
 	private void setName(boolean isPrimary){
 		
 		if(isPrimary)
-			this.name= "Primary";
+			this.name= "Primary "+number;
 		
 		else
-			this.name= "Backup";
+			this.name= "Backup "+number;
 	}
 
+	private void setNumber(int number){
+		
+		this.number= number;
+	}
+	
 	public String getHostAdress(){
 		
 		return this.hostAdress;
@@ -107,6 +111,12 @@ public class SHServiceServer extends JFrame{
 		return this.isPrimary;
 	}
 	
+	public void setToNewPrimary(){
+		
+		this.isPrimary= true;
+		this.setName(this.isPrimary);
+	}
+	
 	public void setIsPrimary(boolean isPrimary){
 		
 		this.isPrimary= isPrimary;
@@ -116,6 +126,7 @@ public class SHServiceServer extends JFrame{
 		
 		
 		try {
+			
 			SHService shService = (SHService) Naming.lookup("rmi://"+hostAdress+":"+port+"/SHService");
 			shService.addService(this.getHostAdress(), this.getPort());
 			if(shService.getIsPrimary())

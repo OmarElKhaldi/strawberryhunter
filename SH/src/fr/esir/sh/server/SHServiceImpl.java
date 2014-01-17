@@ -81,6 +81,36 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return isPrimary;
 	}
 	
+	@Override
+	public void setPrimary(SHService newPrimaryService){
+		
+		this.primaryService= newPrimaryService;
+	}
+	
+	@Override
+	public void setToNewPrimary(){
+		
+		this.shServiceServer.setToNewPrimary();
+	}
+	
+	@Override
+	public List<SHService> getListServices(){
+		
+		return this.listServices;
+	}
+	
+	@Override
+	public String getHostAdress(){
+		
+		return this.shServiceServer.getHostAdress();
+	}
+	
+	@Override
+	public int getPort(){
+		
+		return this.shServiceServer.getPort();
+	}
+	
 	/*@Override
 	public void linkToServiceImpl(SHService shService){
 		
@@ -132,6 +162,12 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	}
 	
 	@Override
+	public void removeService(SHService shService){
+		
+		this.listServices.remove(shService);
+	}
+	
+	@Override
 	public boolean[][] getLogicGameMap()  throws RemoteException{
 		
 		return this.gameMap;		
@@ -170,6 +206,27 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 				
 				String errorMsg= "RemoteException occured. Could not reach the clients list of the primary server. " +
 								 "\nConsequently, the backup server will not add the clients list.";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg, e);
+			}
+		}
+	}
+	
+	@Override
+	public void notifyAllClientsToChangeOldToMe(SHService oldPrimaryService){
+		
+		logger.info("sdsdsd "+this.listClients.size());
+		for(SHServiceClient client : this.listClients){
+			
+			try{
+				
+				client.removeOldService(oldPrimaryService);
+				client.addNewService(this);
+				logger.info("Notifying the client ("+client.getClientId()+") about the new server.");
+			}
+			catch(RemoteException e){
+				
+				String errorMsg= "RemoteException occured. Could not reach the client that will be connected to the new primary Server";
 				logger.error(errorMsg);
 				throw new IllegalStateException(errorMsg, e);
 			}
@@ -277,7 +334,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 
 	private void movePlayerToLeft(SHServiceClient shServiceClient) throws RemoteException {
 	
-		
+		logger.info("The ("+this.getServerName()+") server is moving the player to the left.");
 		Player player= fetch(shServiceClient);
 		
 		if(player == null)
@@ -312,6 +369,8 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	private void movePlayerToDown(SHServiceClient shServiceClient)
 			throws RemoteException {
 	
+		logger.info("The ("+this.getServerName()+") server is moving the player down.");
+		
 		Player player= fetch(shServiceClient);
 		
 		if(player == null)
@@ -346,6 +405,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	private void movePlayerToUp(SHServiceClient shServiceClientM)
 			throws RemoteException {
 		
+		logger.info("The ("+this.getServerName()+") server is moving the player up.");
 		Player player= fetch(shServiceClientM);
 		
 		if(player == null)
@@ -393,7 +453,6 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 			
 			this.gameMap[x][y]= false;
 			this.numberOfSweets --;
-			
 			verifyIfAllSweetsConsumed(shServiceClient);
 		}	
 	}
@@ -460,7 +519,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		listClients.add(shServiceClient);
 		Player player1= new Player(shServiceClient);
 		listPlayers.add(player1);
-		shServiceClient.addServer(this);
+		//shServiceClient.addServer(this);
 		logger.info("Server ("+this.getServerName()+") is adding the client ("+shServiceClient.getClientId()+")");
 		//TODO I am not sure that I need to put the condition below to add rectangles.
 		if(this.shServiceServer.getIsPrimary())

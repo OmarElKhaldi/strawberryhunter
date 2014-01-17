@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.rmi.RemoteException;
 
-import fr.esir.sh.client.Commands;
 import fr.esir.sh.client.SHServiceClientM;
 import fr.esir.sh.client.SHServiceClientV;
+import fr.esir.sh.client.guicomponents.Commands;
 
 
 public class CommonMethodsForTest {
