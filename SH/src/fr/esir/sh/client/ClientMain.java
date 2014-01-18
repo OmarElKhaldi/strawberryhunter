@@ -24,8 +24,8 @@ public class ClientMain {
 		try {
 			
 			SHServiceClientM shServiceClient1 = new SHServiceClientM(1, 0, 0, Color.BLUE, shServiceClientV1, serverHostAdress, serverPort);
-			SHServiceClientM shServiceClient2 = new SHServiceClientM(2, 2, 2, Color.MAGENTA, shServiceClientV2, serverHostAdress, serverPort);
-			SHServiceClientM shServiceClient3 = new SHServiceClientM(3, 4, 6, Color.GREEN, shServiceClientV3, serverHostAdress, serverPort);
+			SHServiceClientM shServiceClient2 = new SHServiceClientM(2, 2, 2, Color.BLUE, shServiceClientV2, serverHostAdress, serverPort);
+			SHServiceClientM shServiceClient3 = new SHServiceClientM(3, 4, 6, Color.BLUE, shServiceClientV3, serverHostAdress, serverPort);
 			
 			//Make sure that all the players are added in the map, so the sweets can not take their places.
 			shServiceClient1.addSweetsAndDisplay();

@@ -9,14 +9,15 @@ import org.slf4j.LoggerFactory;
 
 import fr.esir.sh.server.commonmethods.CommonMethodsForTest;
 
-/**Scenario 1 ==========================================================================================================
- * In this test, we create a primary server that we link with the clients. After that we will add a backup server that 
- * we will link to the primary server. The backup has to extract all the data of the primary in order to be updated.
+/**Scenario ==========================================================================================================
+ * In this test, we create a primary server that we link with the clients. We simulate a crash of the primary server in
+ * order to see if the fault tolerance is working perfectly.
  * =====================================================================================================================*/
 public class SHBackUpTest2 {
 	
 	private static Logger logger;
 	private static SHServiceServer primaryServer;
+	private static SHServiceServer backupServer;
 	
 	@BeforeClass
 	public static void onlyOnce(){
@@ -28,14 +29,20 @@ public class SHBackUpTest2 {
 		boolean isPrimary= true;
 		primaryServer= new SHServiceServer("localhost", 8090, isPrimary, 1);
 		
-		//We load the primary server.
+		//We create the backup Server
+		isPrimary= false;
+		backupServer= new SHServiceServer("localhost", 8091, isPrimary, 2);
+		backupServer.linkToServer("localhost", 8090);
+		
+		//We load both of the servers.
 		try {
 			
 			primaryServer.loadServer();
+			backupServer.loadServer();
 		}
 		catch (RemoteException e) {
 			
-			String errorMsg= "RemoteException occured. Could not reach the method that loads the primary server.";
+			String errorMsg= "RemoteException occured. Could not reach the method that loads the servers.";
 			logger.error(errorMsg);
 			throw new IllegalStateException(errorMsg);
 		}

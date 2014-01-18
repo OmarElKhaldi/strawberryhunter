@@ -311,7 +311,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		//TODO Mettre ceci dans une fonction a part
 		for(SHServiceClient client: listClients){
 			
-			client.getPointAndChange(shServiceClient.getColor(), result);
+			client.getPointAndChange(shServiceClient.getClientId(), result);
 		}
 	}
 	
@@ -344,7 +344,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		//shServiceClient.changeRectanglePos(result[0], result[1]);
 		for(SHServiceClient client: listClients){
 			
-			client.getPointAndChange(shServiceClient.getColor(), result);
+			client.getPointAndChange(shServiceClient.getClientId(), result);
 		}
 	}
 
@@ -380,7 +380,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		//shServiceClient.changeRectanglePos(result[0], result[1]);
 		for(SHServiceClient client: listClients){
 			
-			client.getPointAndChange(shServiceClient.getColor(), result);
+			client.getPointAndChange(shServiceClient.getClientId(), result);
 		}
 	}
 	
@@ -415,7 +415,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		//shServiceClientM.changeRectanglePos(result[0], result[1]);
 		for(SHServiceClient client: listClients){
 			
-			client.getPointAndChange(shServiceClientM.getColor(), result);
+			client.getPointAndChange(shServiceClientM.getClientId(), result);
 		}
 	}
 	

@@ -255,7 +255,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		}
 	}
 
-	public void changeRectanglePos(int pointId, int result[]){
+/*	public void changeRectanglePos(int pointId, int result[]){
 
 		for(Rectangle rectangle: listRectangles){
 
@@ -267,13 +267,13 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 				removeCircleIfExists(result[0], result[1]);
 			}		
 		}
-	}
+	}*/
 
-	public void changeRectanglePos(Color color, int result[]){
+	public void changeRectanglePos(int rectId, int result[]){
 
 
 		for(Rectangle rectangle: listRectangles){
-			if(rectangle.getColor().equals(color)){
+			if(rectangle.getRectId() == rectId){
 
 				rectangle.setX(result[0]);
 				rectangle.setY(result[1]);

@@ -298,9 +298,9 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	}
 
 	@Override
-	public void getPointAndChange(Color color, int result[]){
+	public void getPointAndChange(int rectId, int result[]){
 
-		shServiceClientV.changeRectanglePos(color, result);
+		shServiceClientV.changeRectanglePos(rectId, result);
 	}
 
 	@Override

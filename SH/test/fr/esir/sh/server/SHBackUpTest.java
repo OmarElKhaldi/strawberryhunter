@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import fr.esir.sh.client.SHService;
 import fr.esir.sh.server.commonmethods.CommonMethodsForTest;
 
-/**Scenario 1 ==========================================================================================================
+/**Scenario ==========================================================================================================
  * Creating a primary server, then a backup. After that, we link the list of the clients with the primary.
  * Therefore, those clients are linked to the backup server.
  * =====================================================================================================================*/
@@ -36,14 +36,11 @@ public class SHBackUpTest{
 		
 		//We create the primary server
 		boolean isPrimary= true;
-		String hostAdress= "localhost";
-		int port= 8090;
-		primaryServer= new SHServiceServer(hostAdress, port, isPrimary, 1);
+		primaryServer= new SHServiceServer("localhost", 8090, isPrimary, 1);
 		
 		//We create the backup Server
 		isPrimary= false;
-		port= 8091;
-		backupServer= new SHServiceServer(hostAdress, port, isPrimary, 2);
+		backupServer= new SHServiceServer("localhost", 8091, isPrimary, 2);
 		backupServer.linkToServer("localhost", 8090);
 		
 		//We load both of the servers.
