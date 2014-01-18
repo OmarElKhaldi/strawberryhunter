@@ -17,16 +17,20 @@ public class RecoveryManager{
 	private SHService oldPrimaryService;
 	private SHService newPrimaryService;
 	
-	public RecoveryManager(SHServiceClient sHServiceClient){
+	public RecoveryManager(SHServiceClient sHServiceClient, char action){
 	
 		logger.info("The primary server crashed. Consequently, the recovery manager is created to select a new server as the primary.");
+		if(action == 'x')
+			logger.warn("The last action sent by the client is not saved.");
+		
 		try {
 	
 			this.shServiceClient= sHServiceClient;
 			this.oldPrimaryService= this.shServiceClient.getSHService();
 			this.setNewPrimaryService();
 			this.erasePrimaryFromAllOldServers();
-			notifyServersAboutNewPrimary();
+			this.notifyServersAboutNewPrimary();
+			this.executeSavedAction(action);
 		}
 		catch (RemoteException e1) {
 			
@@ -78,14 +82,22 @@ public class RecoveryManager{
 		newPrimaryService.notifyAllClientsToChangeOldToMe(oldPrimaryService);
 	}
 	
-	//If the next element is alive (!= null)
-	//He becomes primary
-		//Change the boolean
-		//Change SHServiceClient.listServers
-		//Change from the model and the view of the client the reference of the primary server.
-		//Change SHServiceClient.serverHostAdress
-		//Change SHServiceClient.serverPort
-		//Notify all the servers that pointed into the primary server to point into the new one.
-		//Add the new primary into the SHServiceImpl.primaryService for all those who use to point into the old one.
-		//
+	private void executeSavedAction(char action){
+				
+			try {
+				
+				if (action == 'r')			newPrimaryService.movePlayer(this.shServiceClient, 'r');
+				else if (action == 'l')		newPrimaryService.movePlayer(this.shServiceClient, 'l');
+				else if (action == 'd')		newPrimaryService.movePlayer(this.shServiceClient, 'd');
+				else if (action == 'u')		newPrimaryService.movePlayer(this.shServiceClient, 'u');
+				
+				logger.info("The action saved is now executed in the new primary server.");
+			}
+			catch (RemoteException e) {
+
+				String errorMsg= "RemoteException occured. The recovery manager could not reach the new primary in order to execute the action saved.";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg, e);
+			}
+	}
 }

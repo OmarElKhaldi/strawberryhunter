@@ -221,21 +221,37 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 			
 			throw new IllegalStateException("RemoteException occured. Could not get the service to move the players on the map.", e1);
 		}
-		try{
-			  
-			if (keyCode == this.commands.getRight())	shService.movePlayer(this.shServiceClientM, 'r');
-		    else if (keyCode == this.commands.getLeft()) shService.movePlayer(this.shServiceClientM, 'l');
-			else if (keyCode == this.commands.getDown()) shService.movePlayer(this.shServiceClientM, 'd');
-			else if (keyCode == this.commands.getUp()) shService.movePlayer(this.shServiceClientM, 'u');
+		
+		char action= 'x';
+		try{  
+			
+			if (keyCode == this.commands.getRight()){
+				
+				action= 'r';
+				shService.movePlayer(this.shServiceClientM, 'r');
+			}	
+		    else if (keyCode == this.commands.getLeft()){
+		    	
+		    	action= 'l';
+		    	shService.movePlayer(this.shServiceClientM, 'l');
+		    } 
+			else if (keyCode == this.commands.getDown()){
+				
+				action= 'd';
+				shService.movePlayer(this.shServiceClientM, 'd');
+			} 
+			else if (keyCode == this.commands.getUp()){
+				
+				action= 'u';
+				shService.movePlayer(this.shServiceClientM, 'u');
+			} 
 		}
 		catch(RemoteException re){
 	  
 			logger.error("Could not reach the server at ("+this.getServerHostAdress()+", "+this.getServerPort()+")");
-			//get the list of the servers linked to the dead one				
-			RecoveryManager recoveryManager= new RecoveryManager(this.shServiceClientM);
-			
-			logger.warn("The server at ("+this.getServerHostAdress()+", "+this.getServerPort()+")");
-			
+						
+			RecoveryManager recoveryManager= new RecoveryManager(this.shServiceClientM, action);
+			logger.warn("The server at ("+this.getServerHostAdress()+", "+this.getServerPort()+") became the primary.");
 		}
 	}
 

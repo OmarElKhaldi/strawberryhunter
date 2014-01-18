@@ -215,7 +215,6 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	@Override
 	public void notifyAllClientsToChangeOldToMe(SHService oldPrimaryService){
 		
-		logger.info("sdsdsd "+this.listClients.size());
 		for(SHServiceClient client : this.listClients){
 			
 			try{

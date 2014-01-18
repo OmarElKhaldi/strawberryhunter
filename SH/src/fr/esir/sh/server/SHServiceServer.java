@@ -32,7 +32,7 @@ public class SHServiceServer extends JFrame{
 		super("Server GUI");
 		this.setName(isPrimary);
 		this.setNumber(number);
-		lblName= new JLabel("This is the "+this.getName()+" server.");
+		lblName= new JLabel("Server type:  ("+this.getName()+")   -   Number:  ("+this.getNumber()+")");
 		this.setHostAdress(hostAdress);
 		this.setPort(port);
 		this.setIsPrimary(isPrimary);
@@ -70,12 +70,17 @@ public class SHServiceServer extends JFrame{
 	private void setName(boolean isPrimary){
 		
 		if(isPrimary)
-			this.name= "Primary "+number;
+			this.name= "Primary";
 		
 		else
-			this.name= "Backup "+number;
+			this.name= "Backup";
 	}
 
+	private int getNumber(){
+		
+		return this.number;
+	}
+	
 	private void setNumber(int number){
 		
 		this.number= number;
@@ -115,6 +120,7 @@ public class SHServiceServer extends JFrame{
 		
 		this.isPrimary= true;
 		this.setName(this.isPrimary);
+		this.lblName.setText("Server type:  ("+this.getName()+")   -   Number:  ("+this.getNumber()+")");
 	}
 	
 	public void setIsPrimary(boolean isPrimary){
