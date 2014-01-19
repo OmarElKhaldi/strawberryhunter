@@ -35,5 +35,6 @@ public interface SHService extends java.rmi.Remote{
     public void notifyAllClientsToChangeOldToMe(SHService oldPrimaryService) throws RemoteException;
     public String getHostAdress() throws RemoteException;
     public int getPort() throws RemoteException;
+    public void notifyAllClientsToEraseBackup(SHService crashedBackup) throws RemoteException;
     public void refreshServicesList(List<SHService> primaryServiceList) throws RemoteException;
 }

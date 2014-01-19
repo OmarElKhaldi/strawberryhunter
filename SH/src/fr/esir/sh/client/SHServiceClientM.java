@@ -140,7 +140,7 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		}
 		catch(RemoteException e){
 			
-			e.printStackTrace();
+			throw new IllegalStateException("RemoteException occured. Could not reach the service in order to add a new player.", e);
 		}
 	}
 	
@@ -279,7 +279,6 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	
 	public boolean equals(SHServiceClientM shServiceClientM){
 		
-		
 		int otherId= -1;
 		
 		try {
@@ -312,6 +311,13 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 			logger.warn("The client ("+this.clientId+") is not anymore connected to the old server.");
 		}
 			
+	}
+	
+	@Override
+	public void removeBackup(SHService crashedBackup){
+		
+		if(this.listLinksOfServices.contains(crashedBackup))
+			this.listLinksOfServices.remove(crashedBackup);
 	}
 	
 	@Override

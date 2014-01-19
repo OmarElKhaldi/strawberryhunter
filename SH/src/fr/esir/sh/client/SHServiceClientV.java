@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.Serializable;
+import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +152,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		int location=(this.clientId - 1)*450;
 		if(this.clientId < 0)
 			this.clientId= 0;
-		setLocation(location, 0);
+		setLocation(location%1000, 0);
 	}
 
 	public void initializeContainer(){
@@ -249,13 +250,49 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		}
 		catch(RemoteException re){
 	  
-			logger.error("Could not reach the server at ("+this.getServerHostAdress()+", "+this.getServerPort()+")");
+			int crashedServiceIndex= this.getCrashedServiceIndex();
+			List<SHService> listServices= this.getListServices();
+			SHService crashedService= listServices.get(crashedServiceIndex);
+			
+			logger.error("Could not reach the server at the index ("+crashedServiceIndex+")");
 						
-			RecoveryManager recoveryManager= new RecoveryManager(this.shServiceClientM, action);
+			RecoveryManager recoveryManager= new RecoveryManager(this.shServiceClientM, crashedService, action);
 			logger.warn("The server at ("+this.getServerHostAdress()+", "+this.getServerPort()+") became the primary.");
 		}
 	}
+	
+	private int getCrashedServiceIndex(){
+		
+		int i= 0;
+		
+		for(SHService service : this.getListServices()){
 
+			try {
+				service.getIsPrimary();
+			}
+			catch (RemoteException e) {
+				
+				return i;
+			}
+			++i;
+		}
+		
+		return -1;
+	}
+
+	private List<SHService> getListServices(){
+		
+		List<SHService> listServices= null;
+		try {
+			listServices = this.shServiceClientM.getListLinksToServices();
+		}
+		catch (RemoteException e) {
+			
+			throw new IllegalStateException("RemoteException occured. Could not get the list of the services from the model.", e);
+		}
+		
+		return listServices;
+	}
 /*	public void changeRectanglePos(int pointId, int result[]){
 
 		for(Rectangle rectangle: listRectangles){

@@ -1,7 +1,6 @@
 package fr.esir.sh.client.recoverymanagement;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,70 +13,90 @@ public class RecoveryManager{
 	
 	private SHServiceClient shServiceClient;
 	private Logger logger= LoggerFactory.getLogger(SHServiceClientM.class);
-	private SHService oldPrimaryService;
-	private SHService newPrimaryService;
+	private SHService crashedService;
+	private SHService primaryService;
 	
-	public RecoveryManager(SHServiceClient sHServiceClient, char action){
+	public RecoveryManager(SHServiceClient shServiceClient, SHService crashedService, char action){
 	
-		logger.info("The primary server crashed. Consequently, the recovery manager is created to select a new server as the primary.");
+		logger.info("Server crashed. Consequently, the recovery manager is called.");
 		if(action == 'x')
 			logger.warn("The last action sent by the client is not saved.");
 		
-			this.shServiceClient= sHServiceClient;
-			try{
-				
-				this.oldPrimaryService= this.shServiceClient.getSHService();
-			}
-			catch(RemoteException e){
-				
-				e.printStackTrace();
-			}
-			this.erasePrimaryFromAllOldServers();
-			this.setNewPrimaryService();
-			this.notifyServersAboutNewPrimary();
-			this.executeSavedAction(action);
+		this.shServiceClient= shServiceClient;
+		this.crashedService= crashedService;
+		
+		this.eraseServerFromGlobalList();		
+		if(this.wasPrimary(crashedService))
+			recoverFromPrimaryServer();
+		else
+			recoverFromBackupServer(shServiceClient);
+		
+		this.executeSavedAction(action);
+	}
+	
+	private void recoverFromPrimaryServer(){
+		
+		this.setNewPrimaryService();
+		this.notifyServersAboutNewPrimary();
+	}
+	
+	private void recoverFromBackupServer(SHServiceClient shServiceClient){
+		
+		try {
+			
+			this.primaryService= shServiceClient.getSHService();
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the client to get it's primary service.";
+			logger.error(errorMsg);
+			//throw new IllegalStateException(errorMsg, e);
+		}
+		this.notifyAllClientsToEraseBackup();
 	}
 	
 	private void setNewPrimaryService(){
 		
 		try{
 			
-			
-			
 			for(SHService shService : shServiceClient.getListLinksToServices()){
 				
-				if(!shService.equals(this.oldPrimaryService)){
+				if(!shService.equals(this.crashedService)){
 					
 					shService.setToNewPrimary();
-					this.newPrimaryService= shService;
-					this.notifyAllClientsToChangePrimaryService(oldPrimaryService, newPrimaryService);
-					logger.info("The new primary server at the adress "+newPrimaryService.getHostAdress()+":"+newPrimaryService.getPort()+" is selected.");
+					this.primaryService= shService;
+					this.notifyAllClientsToChangePrimaryService(crashedService, primaryService);
+					logger.info("The new primary server at the adress "+primaryService.getHostAdress()+":"+primaryService.getPort()+" is selected.");
 					break;
 				}
 			}	
 		}
 		catch(RemoteException e){
 			
-			e.printStackTrace();
+			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services list.";
+			logger.error(errorMsg);
+			//throw new IllegalStateException(errorMsg, e);
 		}
 
 	}
 	
-	private void erasePrimaryFromAllOldServers(){
+	private void eraseServerFromGlobalList(){
 		
 		try{
 			
 			for(SHService shService : this.shServiceClient.getListLinksToServices()){
 				
-				if(!shService.equals(this.oldPrimaryService)){
+				if(!shService.equals(this.crashedService)){
 					
-					shService.removeService(this.oldPrimaryService);
+					shService.removeService(this.crashedService);
 				}
 			}	
 		}
 		catch(RemoteException e){
 			
-			e.printStackTrace();
+			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services listww.";
+			logger.error(errorMsg);
+			//throw new IllegalStateException(errorMsg, e);
 		}
 
 	}
@@ -87,16 +106,16 @@ public class RecoveryManager{
 		try{
 			
 			for(SHService shService : shServiceClient.getListLinksToServices()){
-				
-				if(shService != null){
-					
-					shService.setPrimary(this.newPrimaryService);
-				}
+			
+				shService.setPrimary(this.primaryService);
+			
 			}
 		}
 		catch(RemoteException e){
 			
-			e.printStackTrace();
+			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services listaa.";
+			logger.error(errorMsg);
+			//throw new IllegalStateException(errorMsg, e);
 		}
 
 	}
@@ -106,14 +125,28 @@ public class RecoveryManager{
 		newPrimaryService.notifyAllClientsToChangeOldToMe(oldPrimaryService);
 	}
 	
+	private void notifyAllClientsToEraseBackup(){
+		
+		try {
+			
+			this.shServiceClient.getSHService().notifyAllClientsToEraseBackup(this.crashedService);
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the client to get it's primary services.";
+			logger.error(errorMsg);
+			//throw new IllegalStateException(errorMsg, e);
+		}
+	}
+	
 	private void executeSavedAction(char action){
 				
 			try {
 				
-				if (action == 'r')			newPrimaryService.movePlayer(this.shServiceClient, 'r');
-				else if (action == 'l')		newPrimaryService.movePlayer(this.shServiceClient, 'l');
-				else if (action == 'd')		newPrimaryService.movePlayer(this.shServiceClient, 'd');
-				else if (action == 'u')		newPrimaryService.movePlayer(this.shServiceClient, 'u');
+				if (action == 'r')			primaryService.movePlayer(this.shServiceClient, 'r');
+				else if (action == 'l')		primaryService.movePlayer(this.shServiceClient, 'l');
+				else if (action == 'd')		primaryService.movePlayer(this.shServiceClient, 'd');
+				else if (action == 'u')		primaryService.movePlayer(this.shServiceClient, 'u');
 				
 				logger.info("The action saved is now executed in the new primary server.");
 			}
@@ -123,5 +156,26 @@ public class RecoveryManager{
 				logger.error(errorMsg);
 				throw new IllegalStateException(errorMsg, e);
 			}
+	}
+	
+	
+	private boolean wasPrimary(SHService crashedService){
+		
+		try {
+			for(SHService service : this.shServiceClient.getListLinksToServices()){
+				if(!service.equals(this.crashedService)){
+					if(service.getIsPrimary()){
+						return false;
+					}
+				}	
+			}
+		}
+		catch (RemoteException e) {
+			
+			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services listxx.";
+			logger.error(errorMsg);
+			//throw new IllegalStateException(errorMsg, e);
+		}
+		return true;
 	}
 }

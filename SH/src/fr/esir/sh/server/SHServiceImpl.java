@@ -216,7 +216,8 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	@Override
 	public void removeService(SHService shService){
 		
-		this.listServices.remove(shService);
+		if(this.listServices.contains(shService))
+			this.listServices.remove(shService);
 	}
 	
 	@Override
@@ -276,6 +277,25 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 				client.removeOldService(oldPrimaryService);
 				client.addNewService(this);
 				logger.info("Notifying the client ("+client.getClientId()+") about the new server.");
+			}
+			catch(RemoteException e){
+				
+				String errorMsg= "RemoteException occured. Could not reach the client that will be connected to the new primary Server";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg, e);
+			}
+		}
+	}
+	
+	@Override
+	public void notifyAllClientsToEraseBackup(SHService crashedBackup){
+		
+		for(SHServiceClient client : this.listClients){
+			
+			try{
+				
+				client.removeBackup(crashedBackup);
+				logger.info("Notifying the client ("+client.getClientId()+") to delete the crashed backup server.");
 			}
 			catch(RemoteException e){
 				
