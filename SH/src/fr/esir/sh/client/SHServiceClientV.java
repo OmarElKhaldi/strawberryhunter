@@ -212,9 +212,10 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		
 		int keyCode = e.getKeyCode();
 		SHService shService= null;
+
 		
 		try {
-			
+
 			shService = this.shServiceClientM.getSHService();
 		}
 		catch (RemoteException e1) {

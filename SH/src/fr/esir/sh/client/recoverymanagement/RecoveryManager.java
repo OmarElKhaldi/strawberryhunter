@@ -23,58 +23,82 @@ public class RecoveryManager{
 		if(action == 'x')
 			logger.warn("The last action sent by the client is not saved.");
 		
-		try {
-	
 			this.shServiceClient= sHServiceClient;
-			this.oldPrimaryService= this.shServiceClient.getSHService();
-			this.setNewPrimaryService();
+			try{
+				
+				this.oldPrimaryService= this.shServiceClient.getSHService();
+			}
+			catch(RemoteException e){
+				
+				e.printStackTrace();
+			}
 			this.erasePrimaryFromAllOldServers();
+			this.setNewPrimaryService();
 			this.notifyServersAboutNewPrimary();
 			this.executeSavedAction(action);
-		}
-		catch (RemoteException e1) {
-			
-			String errorMsg= "RemoteException occured. The recovery manager could not reach the backup server in order to change it into primary.";
-			logger.error(errorMsg);
-			throw new IllegalStateException(errorMsg, e1);
-		}
 	}
 	
-	private void setNewPrimaryService() throws RemoteException{
+	private void setNewPrimaryService(){
 		
-		for(SHService shService : shServiceClient.getListLinksToServices()){
+		try{
 			
-			if(shService != null){
+			
+			
+			for(SHService shService : shServiceClient.getListLinksToServices()){
 				
-				shService.setToNewPrimary();
-				this.newPrimaryService= shService;
-				this.notifyAllClientsToChangePrimaryService(oldPrimaryService, newPrimaryService);
-				logger.info("The new primary server at the adress "+newPrimaryService.getHostAdress()+":"+newPrimaryService.getPort()+" is selected.");
-				break;
-			}
-		}	
+				if(!shService.equals(this.oldPrimaryService)){
+					
+					shService.setToNewPrimary();
+					this.newPrimaryService= shService;
+					this.notifyAllClientsToChangePrimaryService(oldPrimaryService, newPrimaryService);
+					logger.info("The new primary server at the adress "+newPrimaryService.getHostAdress()+":"+newPrimaryService.getPort()+" is selected.");
+					break;
+				}
+			}	
+		}
+		catch(RemoteException e){
+			
+			e.printStackTrace();
+		}
+
 	}
 	
-	private void erasePrimaryFromAllOldServers() throws RemoteException{
+	private void erasePrimaryFromAllOldServers(){
 		
-		for(SHService shService : this.shServiceClient.getListLinksToServices()){
+		try{
 			
-			if(shService != null){
+			for(SHService shService : this.shServiceClient.getListLinksToServices()){
 				
-				shService.removeService(this.oldPrimaryService);
-			}
-		}	
+				if(!shService.equals(this.oldPrimaryService)){
+					
+					shService.removeService(this.oldPrimaryService);
+				}
+			}	
+		}
+		catch(RemoteException e){
+			
+			e.printStackTrace();
+		}
+
 	}
 	
-	private void notifyServersAboutNewPrimary() throws RemoteException{
+	private void notifyServersAboutNewPrimary(){
 		
-		for(SHService shService : shServiceClient.getListLinksToServices()){
+		try{
 			
-			if(shService != null){
+			for(SHService shService : shServiceClient.getListLinksToServices()){
 				
-				shService.setPrimary(this.newPrimaryService);
+				if(shService != null){
+					
+					shService.setPrimary(this.newPrimaryService);
+				}
 			}
 		}
+		catch(RemoteException e){
+			
+			e.printStackTrace();
+		}
+
 	}
 	
 	private void notifyAllClientsToChangePrimaryService(SHService oldPrimaryService, SHService newPrimaryService) throws RemoteException{

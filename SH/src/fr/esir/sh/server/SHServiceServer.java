@@ -43,7 +43,7 @@ public class SHServiceServer extends JFrame{
 			shService = new SHServiceImpl();
 			Naming.rebind("rmi://"+hostAdress+":"+port+"/SHService", shService);
 			shService.setServer(this);
-		    logger.info(this.name+" server launched");
+		    logger.info(this.name+" server launched.");
 		}
 		catch (RemoteException e) {
 			
@@ -130,7 +130,6 @@ public class SHServiceServer extends JFrame{
 	
 	public void linkToServer(String hostAdress, int port){
 		
-		
 		try {
 			
 			SHService shService = (SHService) Naming.lookup("rmi://"+hostAdress+":"+port+"/SHService");
@@ -138,7 +137,7 @@ public class SHServiceServer extends JFrame{
 			if(shService.getIsPrimary())
 				this.shService.addPrimaryIfBackup(shService);
 			
-			logger.info("Server at ("+hostAdress+":"+port+") linked to server at("+this.hostAdress+":"+this.port+")");
+			logger.info("Server at ("+hostAdress+":"+port+") successfully linked to server at("+this.hostAdress+":"+this.port+")");
 		}
 		catch (MalformedURLException e) {
 			
@@ -166,5 +165,7 @@ public class SHServiceServer extends JFrame{
 		this.getSHService().addSweetsIfPrimary();
 		this.getSHService().getPlayersFromPrimaryIfBackup();
 		this.getSHService().getGameMapFromPrimaryIfBackup();
+		logger.info(this.name+" server loaded.");
+		
 	}
 }

@@ -46,12 +46,12 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		this.shServiceClientV.setY(y);
 		this.shServiceClientV.setColor(color);		
 		shService  = initializeService();
-		this.initializeCellSize();		
-		this.initializeGridSize();		
-		this.shServiceClientV.initializeContainer();		
-		logicGameMap= initializeGameMap();		
-		this.shServiceClientV.addModelToView(this);		
-		this.shServiceClientV.setTitle("Player "+clientId);	
+		this.initializeCellSize();
+		this.initializeGridSize();
+		this.shServiceClientV.initializeContainer();
+		logicGameMap= initializeGameMap();
+		this.shServiceClientV.addModelToView(this);
+		this.shServiceClientV.setTitle("Player "+clientId);
 		this.shServiceClientV.initializeFrame();
 		this.addNewPlayer();	    
 	}
@@ -317,12 +317,30 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	@Override
 	public void addNewService(SHService newPrimaryService)throws RemoteException{
 		
+		if(!listLinksOfServices.contains(newPrimaryService))
+			listLinksOfServices.add(newPrimaryService);
+		
+		this.reinitializeService(newPrimaryService.getHostAdress(), newPrimaryService.getPort());
+		logger.info("The client ("+this.clientId+") is now connected to the server at ("+newPrimaryService.getHostAdress()+":"+newPrimaryService.getHostAdress()+").");
+	}
+	
+	@Override
+	public void addNewServiceIntoList(SHService newPrimaryService)throws RemoteException{
+		
 		if(!listLinksOfServices.contains(newPrimaryService)){
 			
 			listLinksOfServices.add(newPrimaryService);
+			logger.info("The client ("+this.clientId+") added the server at ("+newPrimaryService.getHostAdress()+":"+newPrimaryService.getHostAdress()+").");
 		}
-		this.reinitializeService(newPrimaryService.getHostAdress(), newPrimaryService.getPort());
-		logger.info("The client ("+this.clientId+") is now connected to the server at ("+newPrimaryService.getHostAdress()+":"+newPrimaryService.getHostAdress()+").");
+		
+	}
+
+	@Override
+	public void refreshServicesList(List<SHService> primaryServiceList){
+			
+			this.listLinksOfServices= new ArrayList<SHService>();
+			this.listLinksOfServices.addAll(primaryServiceList);
+			logger.info("Client at ("+this.clientId+") successfully refreshed the list of it's links to the servers.");
 	}
 	
 /*	@Override

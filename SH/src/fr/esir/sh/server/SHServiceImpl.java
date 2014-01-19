@@ -19,12 +19,12 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	private int cellSize = 20;
 	private int gridSize = 20;
 	private int numberOfSweets = 10;
-	private List<SHServiceClient> listClients= new ArrayList<SHServiceClient>();
-	private List<Player> listPlayers= new ArrayList<Player>();
 	private boolean[][] gameMap;
 	private SHServiceServer shServiceServer;
 	private SHService primaryService= null;
-	private List<SHService> listServices= new ArrayList<SHService>();
+	private List<SHServiceClient> listClients= new ArrayList<SHServiceClient>();
+	private List<Player> listPlayers= new ArrayList<Player>();
+	private List<SHService> listServices= new ArrayList<SHService>();;
 	private Logger logger= LoggerFactory.getLogger(SHServiceImpl.class);
 	
 	public SHServiceImpl() throws java.rmi.RemoteException {
@@ -42,6 +42,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	public void setServer(SHServiceServer shServiceServer){
 		
 		this.shServiceServer= shServiceServer;
+		if(this.getIsPrimary())		this.listServices.add(this);
 	}
 	
 	@Override
@@ -140,6 +141,12 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 			
 			SHService shService = (SHService) Naming.lookup("rmi://"+hostAdress+":"+port+"/SHService");
 			this.listServices.add(shService);
+			if(this.getIsPrimary()){
+				
+				this.updateTheListsOfTheServersNetwork();
+				this.updateTheListsOfTheClientsNetwork();
+			}
+				
 		}
 		catch (MalformedURLException e) {
 			
@@ -159,6 +166,51 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 			logger.error(errorMsg);
 			throw new IllegalStateException(errorMsg, e);
 		}
+	}
+	
+	private void updateTheListsOfTheServersNetwork(){
+		
+		for(SHService service : listServices){
+			
+			try {
+				if(!service.getIsPrimary())
+					service.refreshServicesList(this.listServices);
+				            
+			}
+			catch (RemoteException e) {
+
+				String errorMsg= "RemoteException occured. Could not reach the servers linked to the primary in order to refresh their servers list.";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg, e);
+			}
+		}
+		
+		logger.info("The primary server at ("+this.getHostAdress()+":"+this.getPort()+") successfully updated the links of the backups.");
+	}
+	
+	private void updateTheListsOfTheClientsNetwork(){
+		
+		for(SHServiceClient client : listClients){
+			
+			try {
+				
+				client.refreshServicesList(this.listServices);
+			}
+			catch (RemoteException e) {
+				
+				String errorMsg= "RemoteException occured. Could not reach the clients linked to the primary in order to refresh their servers list.";
+				logger.error(errorMsg);
+				throw new IllegalStateException(errorMsg, e);
+			}
+		}
+	}
+	
+	@Override
+	public void refreshServicesList(List<SHService> primaryServiceList){
+			
+			this.listServices= new ArrayList<SHService>();
+			this.listServices.addAll(primaryServiceList);
+			logger.info("Backup at ("+this.getHostAdress()+":"+this.getPort()+") successfully refreshed the list of it's links to the servers.");
 	}
 	
 	@Override
@@ -186,6 +238,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 			gameMap = addSweetsIntoLandscape();
 	}
 	
+	
 	@Override
 	public void addPrimaryIfBackup(SHService shService){
 		
@@ -211,6 +264,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 			}
 		}
 	}
+	
 	
 	@Override
 	public void notifyAllClientsToChangeOldToMe(SHService oldPrimaryService){
@@ -310,7 +364,6 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		
 		//TODO Mettre ceci dans une fonction a part
 		for(SHServiceClient client: listClients){
-			
 			client.getPointAndChange(shServiceClient.getClientId(), result);
 		}
 	}
@@ -408,16 +461,17 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		Player player= fetch(shServiceClientM);
 		
 		if(player == null)
-			
 			throw new IllegalStateException("The player to move doesn't exist");
-
+		
 		int result[] = moveToUp(player, shServiceClientM);
 		//shServiceClientM.changeRectanglePos(result[0], result[1]);
+		
 		for(SHServiceClient client: listClients){
 			
 			client.getPointAndChange(shServiceClientM.getClientId(), result);
 		}
 	}
+	
 	
 	private int[] moveToUp(Player player, SHServiceClient shServiceClient)
 		throws RemoteException{
@@ -511,8 +565,10 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 	public void addNewPlayer(SHServiceClient shServiceClient, int id) throws RemoteException {
 		
 		//We notify the other servers about the update
-		for(SHService shService : listServices)
-			shService.addNewPlayer(shServiceClient, id);
+		if(this.getIsPrimary()){
+			for(SHService shService : listServices)
+				if(!shService.equals(this)) shService.addNewPlayer(shServiceClient, id);
+		}
 		
 		//Then we answer to the request of the client
 		listClients.add(shServiceClient);
@@ -545,13 +601,20 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		}
 	}
 
+	
 	@Override
 	public synchronized void movePlayer(SHServiceClient shServiceClientImpl,
 			char movement) throws RemoteException {
-		
+
 		//First, we send the request to the servers linked to this one for the update
-		for(SHService shServiceImpl: listServices)
-			shServiceImpl.movePlayer(shServiceClientImpl, movement);
+		if(this.getIsPrimary()){
+			
+			for(SHService shServiceImpl: listServices){
+				
+				if(!(shServiceImpl.getHostAdress().equals(this.getHostAdress()) && (shServiceImpl.getPort() == this.getPort())) )
+					shServiceImpl.movePlayer(shServiceClientImpl, movement);
+			}
+		}
 		
 		//Then we execute the request
 		if(movement == 'r') this.movePlayerToRight(shServiceClientImpl);
@@ -559,5 +622,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		if(movement == 'u') this.movePlayerToUp(shServiceClientImpl);
 		if(movement == 'd') this.movePlayerToDown(shServiceClientImpl);	
 	}
-	
+
+
+
 }

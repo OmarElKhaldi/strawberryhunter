@@ -3,15 +3,18 @@ package fr.esir.sh.server.commonmethods;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.esir.sh.client.SHServiceClientM;
 import fr.esir.sh.client.SHServiceClientV;
 import fr.esir.sh.client.guicomponents.Commands;
+import fr.esir.sh.server.SHServiceClient;
 
 
 public class CommonMethodsForTest {
 	
-	public static void launchClients(){
+	public static List<SHServiceClientV> launchClients(){
 		
 		String serverHostAdress= "localhost";
 		int serverPort= 8090;
@@ -23,6 +26,11 @@ public class CommonMethodsForTest {
 		SHServiceClientV shServiceClientV1= new SHServiceClientV(1, commands1);
 		SHServiceClientV shServiceClientV2= new SHServiceClientV(2, commands2);
 		SHServiceClientV shServiceClientV3= new SHServiceClientV(3, commands3);
+		
+		List<SHServiceClientV> listClients= new ArrayList<SHServiceClientV>();
+		listClients.add(shServiceClientV1);
+		listClients.add(shServiceClientV2);
+		listClients.add(shServiceClientV3);
 		
 		try {
 			
@@ -39,5 +47,7 @@ public class CommonMethodsForTest {
 
 			throw new IllegalStateException("RemoteException occured. The clients are not initialized, this is probably due to the server that doensn't answer to the requests of the clients.", e);
 		}
+		
+		return listClients;
 	}
 }

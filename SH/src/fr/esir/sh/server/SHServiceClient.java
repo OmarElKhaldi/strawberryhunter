@@ -30,4 +30,6 @@ public interface SHServiceClient extends java.rmi.Remote{
 	public List<SHService> getListLinksToServices() throws RemoteException;
 	public void removeOldService(SHService oldPrimaryService) throws RemoteException;
 	public void addNewService(SHService newPrimaryService)throws RemoteException;
+	public void addNewServiceIntoList(SHService newPrimaryService)throws RemoteException;
+	public void refreshServicesList(List<SHService> listServices) throws RemoteException;
 }
