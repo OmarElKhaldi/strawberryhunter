@@ -50,7 +50,6 @@ public class RecoveryManager{
 			
 			String errorMsg= "RemoteException occured. Could not reach the client to get it's primary service.";
 			logger.error(errorMsg);
-			//throw new IllegalStateException(errorMsg, e);
 		}
 		this.notifyAllClientsToEraseBackup();
 	}
@@ -75,7 +74,6 @@ public class RecoveryManager{
 			
 			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services list.";
 			logger.error(errorMsg);
-			//throw new IllegalStateException(errorMsg, e);
 		}
 
 	}
@@ -96,7 +94,6 @@ public class RecoveryManager{
 			
 			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services listww.";
 			logger.error(errorMsg);
-			//throw new IllegalStateException(errorMsg, e);
 		}
 
 	}
@@ -115,7 +112,6 @@ public class RecoveryManager{
 			
 			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services listaa.";
 			logger.error(errorMsg);
-			//throw new IllegalStateException(errorMsg, e);
 		}
 
 	}
@@ -135,7 +131,6 @@ public class RecoveryManager{
 			
 			String errorMsg= "RemoteException occured. Could not reach the client to get it's primary services.";
 			logger.error(errorMsg);
-			//throw new IllegalStateException(errorMsg, e);
 		}
 	}
 	
@@ -174,7 +169,6 @@ public class RecoveryManager{
 			
 			String errorMsg= "RemoteException occured. Could not reach the client to get it's globab services listxx.";
 			logger.error(errorMsg);
-			//throw new IllegalStateException(errorMsg, e);
 		}
 		return true;
 	}

@@ -173,14 +173,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		
 		this.myRectangle = new Rectangle(this, this.clientId, this.x, this.y, this.color);
 		this.listRectangles.add(this.myRectangle);
-/*		try {
-			
-			this.shServiceClientM.initializeMyPoint(x, y);
-		}
-		catch (RemoteException e) {
-			
-			throw new IllegalStateException("RemoteException occured. Could not add a new point.", e);
-		}*/
+
 	}
 
 	public void addRectangle(int id, int x, int y, Color color){
@@ -293,19 +286,7 @@ public class SHServiceClientV extends JFrame implements KeyListener, Serializabl
 		
 		return listServices;
 	}
-/*	public void changeRectanglePos(int pointId, int result[]){
 
-		for(Rectangle rectangle: listRectangles){
-
-			if(rectangle.getRectId() == pointId){
-				
-				rectangle.setX(result[0]);
-				rectangle.setY(result[1]);
-				rectangle.repaint();
-				removeCircleIfExists(result[0], result[1]);
-			}		
-		}
-	}*/
 
 	public void changeRectanglePos(int rectId, int result[]){
 

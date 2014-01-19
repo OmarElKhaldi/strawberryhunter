@@ -83,29 +83,6 @@ public class SHServiceImplTest {
 		}
 	}
 	
-	@Test
-	public void testGetLogicMap(){
-		
-		int numberOfSweets=0;
-		
-		try {
-			
-			boolean[][] landscape= shService.getLogicGameMap();
-			
-			for(int i= 0;i< shService.getGridSize(); ++i){
-				for(int j= 0; j<shService.getGridSize(); ++j){
-					
-					if(landscape[i][j] == true)
-						numberOfSweets++;
-				}
-			}
-			
-			assertEquals(numberOfSweets, shService.getNumberOfSweets());
-			
-		} catch (RemoteException e) {
 
-			throw new IllegalStateException("RemoteException occured. Could not get the distribution of the sweets while testing the server.", e);
-		}
-	}
 	
 }

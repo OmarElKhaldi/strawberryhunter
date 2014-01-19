@@ -19,12 +19,9 @@ public interface SHServiceClient extends java.rmi.Remote{
 	public Rectangle getMyRectangle() throws RemoteException;
 	public SHServiceClientV getView() throws RemoteException;
 	public void getPointAndChange(int rectId, int result[]) throws RemoteException;
-	//public void addPoint(int x, int y) throws RemoteException;
-	//public void initializeMyPoint(int x, int y) throws RemoteException;
 	public void addScore() throws RemoteException;
 	public int getScore() throws RemoteException;
 	public void removeSweetFromServer(int x, int y) throws RemoteException;
-	//public void addServer(SHService shService) throws RemoteException;
 	public String getServerHostAdress() throws RemoteException;
 	public int getServerPort() throws RemoteException;
 	public List<SHService> getListLinksToServices() throws RemoteException;

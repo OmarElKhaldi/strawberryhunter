@@ -112,27 +112,7 @@ public class SHServiceImpl extends java.rmi.server.UnicastRemoteObject implement
 		return this.shServiceServer.getPort();
 	}
 	
-	/*@Override
-	public void linkToServiceImpl(SHService shService){
-		
-		this.listServices.add(shService);
-		try {
-			
-			shService.linkToServiceFromOneSide(this);
-		}
-		catch (RemoteException e) {
-			
-			String errorMsg= "RemoteException ocured. ("+this.getServerName()+") successfully added a new server but not from the other side.";
-			logger.error(errorMsg);
-			throw new IllegalStateException(errorMsg);
-		}
-	}
 	
-	@Override
-	public void linkToServiceFromOneSide(SHService shService){
-	
-		this.listServices.add(shService);
-	}*/
 	
 	@Override
 	public void addService(String hostAdress, int port){

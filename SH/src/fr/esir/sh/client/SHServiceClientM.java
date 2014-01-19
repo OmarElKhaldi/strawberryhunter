@@ -13,7 +13,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.esir.sh.client.guicomponents.Point;
 import fr.esir.sh.client.guicomponents.Rectangle;
 import fr.esir.sh.server.SHServiceClient;
 import fr.esir.sh.server.SHServiceImpl;
@@ -25,11 +24,8 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 	private SHService shService;
 	private SHServiceClientV shServiceClientV;
 	private List<SHServiceClient> listClients= new ArrayList<SHServiceClient>();
-	private Point myPoint;
-	private List<Point> listPoints= new ArrayList<Point>();
 	private int score= 0;
 	private boolean[][] logicGameMap= null;
-	//private List<SHService> listServers= new ArrayList<SHService>();
 	private String serverHostAdress;
 	private int serverPort;
 	private List<SHService> listLinksOfServices= new ArrayList<SHService>();
@@ -149,26 +145,6 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 		//this.listPoints.add(new Point(id, x, y));
 		this.shServiceClientV.addRectangle(id, x, y, color);
 	}
-	
-/*	@Override
-	public void initializeMyPoint(int x, int y){
-		
-		try {
-			myPoint= new Point(clientId, x, y);
-			this.listPoints.add(myPoint);
-		}
-		catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
-	
-/*	@Override
-	public void addPoint(int x, int y) throws RemoteException{
-		
-		Point point = new Point(clientId, x, y);
-		this.listPoints.add(point);
-	}*/
 	
 	public void reinitializeService(String hostAdress, int port){
 		
@@ -348,20 +324,5 @@ public class SHServiceClientM extends java.rmi.server.UnicastRemoteObject implem
 			this.listLinksOfServices.addAll(primaryServiceList);
 			logger.info("Client at ("+this.clientId+") successfully refreshed the list of it's links to the servers.");
 	}
-	
-/*	@Override
-	public void addServer(SHService shService) throws RemoteException {
-	
-		this.listServers.add(shService);
-		try {
-			
-			logger.info("Client ("+this.clientId+") is adding the server ("+shService.getServerName()+")");
-		}
-		catch (RemoteException e) {
-			
-			String errorMsg= "RemoteException occured. Could not reach the server to get it's name in order to display it.";
-			logger.error(errorMsg);
-		}
-	}*/
 	
 }
